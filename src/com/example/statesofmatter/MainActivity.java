@@ -32,11 +32,15 @@ public class MainActivity extends Activity {
 	}
 	
 	public void findGameAction(View view){
-        Toast.makeText(this, "Find Game button clicked", Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, "Find Game button clicked", Toast.LENGTH_LONG).show();
+	    Intent intent = new Intent(this, FindGameActivity.class);
+	    startActivity(intent);
 	}
 	
 	public void settingsAction(View view){
-        Toast.makeText(this, "Settings button clicked", Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, "Settings button clicked", Toast.LENGTH_LONG).show();
+	    Intent intent = new Intent(this, SettingsActivity.class);
+	    startActivity(intent);
 	}
 	
 }

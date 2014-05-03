@@ -26,6 +26,18 @@
             android:name="com.example.statesofmatter.CreateTeamActivity"
             android:label="@string/title_activity_create_team" >
         </activity>
+        <activity
+            android:name="com.example.statesofmatter.SettingsActivity"
+            android:label="@string/title_activity_settings" >
+        </activity>
+        <activity
+            android:name="com.example.statesofmatter.FindGameActivity"
+            android:label="@string/title_activity_find_game" >
+        </activity>
+        <activity
+            android:name="com.example.statesofmatter.TeamBuilderActivity"
+            android:label="@string/title_activity_team_builder" >
+        </activity>
     </application>
 
 </manifest>
