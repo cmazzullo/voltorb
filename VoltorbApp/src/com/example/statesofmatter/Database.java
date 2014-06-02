@@ -12,4 +12,12 @@ public class Database {
     public Monster getMonster (String name) {
         return null;
     }
+    
+    public Attack getAttack (String name) {
+        return null;
+    }
+    
+    public void getData () {
+        // read data from txt and add to HashMaps
+    }
 }
