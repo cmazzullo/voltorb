@@ -9,7 +9,7 @@ public class Monster {
     }
     
     public enum Types {
-        FIRE. WATER, AIR, EARTH, DARK, LIGHT
+        FIRE, WATER, AIR, EARTH, DARK, LIGHT
     }
     // Stats that change
     public int hp;

@@ -1,0 +1,24 @@
+# view AndroidManifest.xml #generated:25
+-keep class com.example.statesofmatter.CreateTeamActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:33
+-keep class com.example.statesofmatter.FindGameActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:16
+-keep class com.example.statesofmatter.MainActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:29
+-keep class com.example.statesofmatter.SettingsActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:37
+-keep class com.example.statesofmatter.TeamBuilderActivity { <init>(...); }
+
+# onClick res/layout/activity_main.xml #generated:8
+-keepclassmembers class * { *** createTeamAction(...); }
+
+# onClick res/layout/activity_main.xml #generated:18
+-keepclassmembers class * { *** findGameAction(...); }
+
+# onClick res/layout/activity_main.xml #generated:28
+-keepclassmembers class * { *** settingsAction(...); }
+
