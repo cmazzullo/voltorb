@@ -11,9 +11,7 @@ public class Database {
         // We need to read in all the Monster and Attack data from
         // text files or something here
     }
-<<<<<<< HEAD
-}
-=======
+
     public Monster getMonster (String name) {
         return null;
     }
@@ -26,4 +24,3 @@ public class Database {
         // read data from txt and add to HashMaps
     }
 }
->>>>>>> ee249c106478daaf4f61fc097bb5cb74daa58882
