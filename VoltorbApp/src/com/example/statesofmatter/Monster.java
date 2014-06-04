@@ -7,7 +7,10 @@ public class Monster {
     public enum State {
         SOLID, LIQUID, GAS, PLASMA
     }
-
+    
+    public enum Types {
+        FIRE. WATER, AIR, EARTH, DARK, LIGHT
+    }
     // Stats that change
     public int hp;
     public State state;
