@@ -1,10 +1,16 @@
+package com.example.statesofmatter;
+
 import java.util.ArrayList;
 
 public class Monster {
     
+    public enum State {
+        SOLID, LIQUID, GAS, PLASMA
+    }
+
     // Stats that change
     public int hp;
-    public int state;
+    public State state;
 
     // Permanent stats
     public String name;
@@ -21,7 +27,7 @@ public class Monster {
 
     public Monster (String name) {
         this.name = name;
-        state = 1;
+        state = State.SOLID;
     }
     
 }

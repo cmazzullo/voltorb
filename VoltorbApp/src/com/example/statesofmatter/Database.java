@@ -1,3 +1,5 @@
+package com.example.statesofmatter;
+
 import java.util.HashMap;
 
 public class Database {
@@ -9,5 +11,4 @@ public class Database {
         // We need to read in all the Monster and Attack data from
         // text files or something here
     }
-
 }
