@@ -1,3 +1,5 @@
+package com.example.statesofmatter;
+
 import java.util.HashMap;
 
 public class Database {
