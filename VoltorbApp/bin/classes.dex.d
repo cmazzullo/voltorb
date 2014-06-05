@@ -1,0 +1,23 @@
+/home/chris/projects/voltorb/VoltorbApp/bin/classes.dex : \
+/home/chris/projects/voltorb/VoltorbApp/bin/classes/com/example/statesofmatter/R$layout.class \
+/home/chris/projects/voltorb/VoltorbApp/bin/classes/com/example/statesofmatter/Player.class \
+/home/chris/projects/voltorb/VoltorbApp/bin/classes/com/example/statesofmatter/MainActivity.class \
+/home/chris/projects/voltorb/VoltorbApp/bin/classes/com/example/statesofmatter/R$drawable.class \
+/home/chris/projects/voltorb/VoltorbApp/bin/classes/com/example/statesofmatter/BuildConfig.class \
+/home/chris/projects/voltorb/VoltorbApp/bin/classes/com/example/statesofmatter/CreateTeamActivity.class \
+/home/chris/projects/voltorb/VoltorbApp/bin/classes/com/example/statesofmatter/R$attr.class \
+/home/chris/projects/voltorb/VoltorbApp/bin/classes/com/example/statesofmatter/R$style.class \
+/home/chris/projects/voltorb/VoltorbApp/bin/classes/com/example/statesofmatter/Database.class \
+/home/chris/projects/voltorb/VoltorbApp/bin/classes/com/example/statesofmatter/Attack.class \
+/home/chris/projects/voltorb/VoltorbApp/bin/classes/com/example/statesofmatter/Monster.class \
+/home/chris/projects/voltorb/VoltorbApp/bin/classes/com/example/statesofmatter/Monster$Types.class \
+/home/chris/projects/voltorb/VoltorbApp/bin/classes/com/example/statesofmatter/TeamBuilderActivity.class \
+/home/chris/projects/voltorb/VoltorbApp/bin/classes/com/example/statesofmatter/R$string.class \
+/home/chris/projects/voltorb/VoltorbApp/bin/classes/com/example/statesofmatter/Monster$State.class \
+/home/chris/projects/voltorb/VoltorbApp/bin/classes/com/example/statesofmatter/R$id.class \
+/home/chris/projects/voltorb/VoltorbApp/bin/classes/com/example/statesofmatter/SettingsActivity.class \
+/home/chris/projects/voltorb/VoltorbApp/bin/classes/com/example/statesofmatter/R$menu.class \
+/home/chris/projects/voltorb/VoltorbApp/bin/classes/com/example/statesofmatter/R.class \
+/home/chris/projects/voltorb/VoltorbApp/bin/classes/com/example/statesofmatter/Attack$Types.class \
+/home/chris/projects/voltorb/VoltorbApp/bin/classes/com/example/statesofmatter/FindGameActivity.class \
+/home/chris/projects/voltorb/VoltorbApp/bin/dexedLibs/android-support-v4-2a556b49b4775ceb816b348f8257b872.jar \
