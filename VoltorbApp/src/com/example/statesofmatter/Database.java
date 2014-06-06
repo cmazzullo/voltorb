@@ -11,7 +11,7 @@ public class Database {
         // We need to read in all the Monster and Attack data from
         // text files or something here
     }
-
+    
     public Monster getMonster (String name) {
         return null;
     }
