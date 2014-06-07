@@ -1,6 +1,6 @@
 /**
  * Implements a monster object which contains stats (immutable)
- * as well as HP, state and fainted values (mutable).
+ * as well as HP, state, status, and fainted values (mutable).
  */
 package com.example.statesofmatter;
 
@@ -14,9 +14,13 @@ public class Monster {
     public enum Type {
         FIRE, WATER, AIR, EARTH, DARK, LIGHT
     }
+    public enum Status {
+    	NORMAL, POISON, SLEEP, PARALYSIS //etc, add more here
+    }
     // Stats that change
     private int hp;
     private State state;
+    private Status status;
 
     // Permanent stats
     private String name;
@@ -49,6 +53,7 @@ public class Monster {
 
         this.hp = vitality;
         state = State.SOLID;
+        status = Status.NORMAL;
     }
 
     /* Boilerplate accessor/modifier methods */
@@ -62,6 +67,10 @@ public class Monster {
 
     public State getState() {
         return state;
+    }
+    
+    public Status getStatus() {
+    	return status;
     }
 
     public void setState(State newState) {
@@ -117,16 +126,16 @@ public class Monster {
     }
 
     public void printStatus() {
-        System.out.printf("name = %s\n" +
-                          "HP = %d\n" +
-                          "vitality = %d\n" +
-                          "speed = %d\n" +
-                          "physStr = %d\n" +
-                          "spiritStr = %d\n" +
-                          "intStr = %d\n" +
-                          "physEndur = %d\n" +
-                          "spiritEndur = %d\n" +
-                          "intEndur = %d\n",
+        System.out.printf("name = %s%n" +
+                          "HP = %d%n" +
+                          "vitality = %d%n" +
+                          "speed = %d%n" +
+                          "physStr = %d%n" +
+                          "spiritStr = %d%n" +
+                          "intStr = %d%n" +
+                          "physEndur = %d%n" +
+                          "spiritEndur = %d%n" +
+                          "intEndur = %d%n",
                           name, hp, vitality, speed, physStr, 
                           spiritStr, intStr, physEndur, spiritEndur, 
                           intEndur);
