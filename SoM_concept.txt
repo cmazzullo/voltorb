@@ -97,6 +97,9 @@ equation.
 Taking into account the alternative model for States, the final equation is:
 damage = health - ((calculated damage - endurance) * element)
 
+***Actually, should probably incorporate endurance as a ratio with strength to avoid 
+having to deal with negative damages.***
+
 Status effect duration should be determined by a percentage chance to throw it off each 
 round. This chance increases every round, linearly, until it reaches 100%. It always 
 starts at 0% for the first turn.
