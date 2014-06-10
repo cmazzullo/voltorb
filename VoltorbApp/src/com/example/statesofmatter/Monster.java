@@ -34,11 +34,14 @@ public class Monster {
     private int physEndur;
     private int spiritEndur;
     private int intEndur;
+    
+    // Equipables
+    private int[] equipment;
 
     public Monster (String name, Type[] types, Attack[] attacks, 
                     int vitality, int speed, int physStr, 
                     int spiritStr, int intStr, int physEndur, 
-                    int spiritEndur, int intEndur) {
+                    int spiritEndur, int intEndur, int[] equipment) {
         this.name = name;
         this.types = types;
         this.attacks = attacks;
@@ -54,6 +57,10 @@ public class Monster {
         this.hp = vitality;
         state = State.SOLID;
         status = Status.NORMAL;
+        
+        this.equipment = equipment;
+        equipment = new int[2];
+        
     }
 
     /* Boilerplate accessor/modifier methods */
@@ -123,6 +130,10 @@ public class Monster {
 
     public int getIntEndur() {
         return intEndur;
+    }
+    
+    public int[] getEquip() {
+    	return equipment;
     }
 
     public void printStatus() {
