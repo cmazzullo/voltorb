@@ -17,10 +17,16 @@ public class Monster {
     public enum Status {
     	NORMAL, POISON, SLEEP, PARALYSIS //etc, add more here
     }
+    public enum BuffDebuff {
+    	NONE, DE_SPEED, DE_PSTR, DE_SSTR, DE_ISTR, DE_PEND, 
+    	DE_SEND, DE_IEND, BUF_SPEED, BUF_PSTR, BUF_SSTR, 
+    	BUF_ISTR, BUF_PEND, BUF_SEND, BUF_IEND
+    }
     // Stats that change
     private int hp;
     private State state;
     private Status status;
+    private BuffDebuff buffdebuff;
 
     // Permanent stats
     private String name;
@@ -57,6 +63,7 @@ public class Monster {
         this.hp = vitality;
         state = State.SOLID;
         status = Status.NORMAL;
+        buffdebuff = BuffDebuff.NONE;
         
         this.equipment = equipment;
         equipment = new int[2];
@@ -75,15 +82,27 @@ public class Monster {
     public State getState() {
         return state;
     }
-    
-    public Status getStatus() {
-    	return status;
-    }
 
     public void setState(State newState) {
         state = newState;
     }
-
+    
+    public Status getStatus() {
+    	return status;
+    }
+    
+    public void setStatus(Status newStatus) {
+    	status = newStatus;
+    }
+    
+    public BuffDebuff getBuffDebuff() {
+    	return buffdebuff;
+    }
+    
+    public void setBuffDebuff(BuffDebuff newBuffDebuff) {
+    	buffdebuff = newBuffDebuff;
+    }
+    
     public boolean isFainted() {
         return (hp <= 0);
     }
@@ -150,5 +169,23 @@ public class Monster {
                           name, hp, vitality, speed, physStr, 
                           spiritStr, intStr, physEndur, spiritEndur, 
                           intEndur);
+    }
+    
+    //methods to check and resolve a Monster's status at the
+    //beginning of each turn
+    private void checkStatus(Status currentStatus, int[] currentEquip) {
+    	currentStatus = this.getStatus();
+    	currentEquip = this.getEquip();
+    	if (currentStatus != Status.NORMAL) {
+    		//count duration
+    	}
+    	if (currentStatus != Status.NORMAL) {
+    		for (int i=0; i<currentEquip.length; i++) {
+    			//if (currentEquip[i].getType() == Item.CURE && 
+    				//currentEquip[i].getCureType == currentStatus.getStatus()) {
+    				//this.useItem(currentEquip[i];
+    			//}
+    		}
+    	}
     }
 }
