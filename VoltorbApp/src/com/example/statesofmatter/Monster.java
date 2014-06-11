@@ -4,14 +4,14 @@
  */
 package com.example.statesofmatter;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Monster {
     
     public enum State {
         SOLID, LIQUID, GAS, PLASMA
     }
-    public enum Type {
+    public enum Element {
         FIRE, WATER, AIR, EARTH, DARK, LIGHT
     }
     public enum Status {
@@ -30,8 +30,9 @@ public class Monster {
 
     // Permanent stats
     private String name;
-    private Type[] types;
+    private Element[] types;
     private Attack[] attacks;
+    private String[] attackString; //placeholder for temp constructor
     private int vitality;
     private int speed;
     private int physStr;
@@ -42,12 +43,12 @@ public class Monster {
     private int intEndur;
     
     // Equipables
-    private int[] equipment;
+    //private int[] equipment;
 
-    public Monster (String name, Type[] types, Attack[] attacks, 
+    public Monster (String name, Element[] types, Attack[] attacks, 
                     int vitality, int speed, int physStr, 
                     int spiritStr, int intStr, int physEndur, 
-                    int spiritEndur, int intEndur, int[] equipment) {
+                    int spiritEndur, int intEndur/*, int[] equipment*/) {
         this.name = name;
         this.types = types;
         this.attacks = attacks;
@@ -65,9 +66,33 @@ public class Monster {
         status = Status.NORMAL;
         buffdebuff = BuffDebuff.NONE;
         
-        this.equipment = equipment;
-        equipment = new int[2];
+        //this.equipment = equipment;
+        //equipment = new int[2];
         
+    }
+    
+    //temp constructor until Attack and Item classes defined
+    public Monster (String name, Element[] types, String[] attacks, 
+    				int vitality, int speed, int physStr, 
+    				int spiritStr, int intStr, int physEndur, 
+    				int spiritEndur, int intEndur) {
+    	this.name = name;
+    	this.types = types;
+    	this.attackString = attacks;
+    	this.vitality = vitality;
+    	this.speed = speed;
+    	this.physStr = physStr;
+    	this.spiritStr = spiritStr;
+    	this.intStr = intStr;
+    	this.physEndur = physEndur;
+    	this.spiritEndur = spiritEndur;
+    	this.intEndur = intEndur;
+
+    	this.hp = vitality;
+    	state = State.SOLID;
+    	status = Status.NORMAL;
+    	buffdebuff = BuffDebuff.NONE;
+
     }
 
     /* Boilerplate accessor/modifier methods */
@@ -115,7 +140,7 @@ public class Monster {
         return attacks;
     }
 
-    public Type[] getTypes() {
+    public Element[] getTypes() {
         return types;
     }
 
@@ -151,13 +176,15 @@ public class Monster {
         return intEndur;
     }
     
-    public int[] getEquip() {
+    /*public int[] getEquip() {
     	return equipment;
-    }
+    }*/
 
     public void printStatus() {
         System.out.printf("name = %s%n" +
-                          "HP = %d%n" +
+                          "element = %s%n" +
+                          "attacks = %s%n" +
+        				  "HP = %d%n" +
                           "vitality = %d%n" +
                           "speed = %d%n" +
                           "physStr = %d%n" +
@@ -165,15 +192,15 @@ public class Monster {
                           "intStr = %d%n" +
                           "physEndur = %d%n" +
                           "spiritEndur = %d%n" +
-                          "intEndur = %d%n",
-                          name, hp, vitality, speed, physStr, 
-                          spiritStr, intStr, physEndur, spiritEndur, 
-                          intEndur);
+                          "intEndur = %d%n%n",
+                          name, Arrays.toString(types), Arrays.toString(attackString), 
+                          hp, vitality, speed, physStr, spiritStr, intStr, 
+                          physEndur, spiritEndur, intEndur);
     }
     
     //methods to check and resolve a Monster's status at the
     //beginning of each turn
-    private void checkStatus(Status currentStatus, int[] currentEquip) {
+    /*private void checkStatus(Status currentStatus, int[] currentEquip) {
     	currentStatus = this.getStatus();
     	currentEquip = this.getEquip();
     	if (currentStatus != Status.NORMAL) {
@@ -187,5 +214,5 @@ public class Monster {
     			//}
     		}
     	}
-    }
+    }*/
 }
