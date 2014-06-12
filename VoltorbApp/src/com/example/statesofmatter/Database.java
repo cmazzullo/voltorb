@@ -35,7 +35,7 @@ public class Database {
     	Scanner s = null;
     	
     	try {
-    		s = new Scanner(new BufferedReader(new FileReader("MonsterList.txt")));
+    		s = new Scanner(new BufferedReader(new FileReader("C:\\Users\\Jim\\Scripts\\voltorb\\VoltorbApp\\bin\\classes\\MonsterList.txt")));
     		s.useDelimiter(",");
     		MonsterMap = new HashMap<String, Monster>();
     		//Monster newMonster = new Monster(s.next(),  (s.next()));
@@ -61,6 +61,7 @@ public class Database {
     		System.err.println("File does not exist");
     		throw new FileNotFoundException("Input file could not be found");
     	} finally {
+    		System.out.println(MonsterMap.size());
 			if (s != null) {
 				s.close();
 			}
