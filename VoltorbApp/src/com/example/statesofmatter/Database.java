@@ -31,14 +31,14 @@ public class Database {
         throw new Exception("MonsterMap or input String is null/empty");
     }
     
+    // read data from txt and add to HashMaps
     public void getData () throws FileNotFoundException{
     	Scanner s = null;
     	
     	try {
-    		s = new Scanner(new BufferedReader(new FileReader("C:\\Users\\Jim\\Scripts\\voltorb\\VoltorbApp\\bin\\classes\\MonsterList.txt")));
+    		s = new Scanner(new BufferedReader(new FileReader("MonsterList.txt")));
     		s.useDelimiter(",");
     		MonsterMap = new HashMap<String, Monster>();
-    		//Monster newMonster = new Monster(s.next(),  (s.next()));
     		
     		while (s.hasNextLine()) {
     			String monster = s.nextLine();
@@ -66,7 +66,6 @@ public class Database {
 				s.close();
 			}
     	}
-        // read data from txt and add to HashMaps
     }
     public static void main(String[] Args) throws FileNotFoundException {
     	Database test = new Database();
