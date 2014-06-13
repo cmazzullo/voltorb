@@ -32,7 +32,6 @@ public class Monster {
     private String name;
     private Element[] elements;
     private Attack[] attacks;
-    private String[] attackString = new String[4]; //placeholder for temp constructor
     private int vitality;
     private int speed;
     private int physStr;
