@@ -17,7 +17,7 @@ public class Attack {
     	this.baseDamage = baseDamage;
     }
 
-    //get and set methods
+    //accessor/modifier methods
 	public String getName() {
 		return name;
 	}

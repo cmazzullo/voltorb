@@ -9,6 +9,7 @@ public class Database {
     
     private HashMap<String, Monster> MonsterMap;
     private HashMap<String, Attack> AttackMap;
+    private HashMap<String, Item> ItemMap;
 
     public Database () {
         // We need to read in all the Monster and Attack data from
@@ -28,18 +29,29 @@ public class Database {
     		&& !AttackMap.isEmpty() 
     		&& !"".equals(name)) 
     			return AttackMap.get(name);
-        throw new Exception("MonsterMap or input String is null/empty");
+        throw new Exception("AttackMap or input String is null/empty");
+    }
+    
+    public Item getItem (String name) throws Exception {
+    	if (ItemMap != null 
+    		&& !ItemMap.isEmpty() 
+    		&& !"".equals(name)) 
+    			return ItemMap.get(name);
+        throw new Exception("ItemMap or input String is null/empty");
     }
     
     // read data from txt and add to HashMaps
     public void getData () throws FileNotFoundException {
     	Scanner sa = null;
+    	Scanner si = null;
     	Scanner sm = null;
     	
     	try {
     		sa = new Scanner(new BufferedReader(new FileReader("AttackList.txt")));
+    		si = new Scanner(new BufferedReader(new FileReader("ItemList.txt")));
     		sm = new Scanner(new BufferedReader(new FileReader("MonsterList.txt")));
     		AttackMap = new HashMap<String, Attack>();
+    		ItemMap = new HashMap<String, Item>();
     		MonsterMap = new HashMap<String, Monster>();
     		
     		while (sa.hasNextLine()) {
@@ -48,6 +60,23 @@ public class Database {
     										  Attack.Element.valueOf(tempAttack[1]),
     										  Integer.parseInt(tempAttack[2]));
     			AttackMap.put(tempAttack[0], newAttack);
+    		} while (si.hasNextLine()) {
+    			String[] tempItem = si.nextLine().split(";");
+    			Item newItem;
+    			if (tempItem.length == 4) {
+    				newItem = new Item(tempItem[0], 
+    								   Item.ItemType.valueOf(tempItem[1]),
+    								   Item.CureType.valueOf(tempItem[2]),
+    								   Integer.parseInt(tempItem[3]));
+    			} else if (tempItem.length == 3) {
+    				newItem = new Item(tempItem[0], 
+							  		   Item.ItemType.valueOf(tempItem[1]),
+							  		   Item.CureType.valueOf(tempItem[2]));
+    			} else {
+    				newItem = new Item(tempItem[0], 
+							  		   Item.ItemType.valueOf(tempItem[1]));
+    			}
+    			ItemMap.put(tempItem[0], newItem);
     		} while (sm.hasNextLine()) {	
     			String[] tempMonster = sm.nextLine().split(";");
     			String[] elementString = tempMonster[1].split(",");
@@ -65,11 +94,19 @@ public class Database {
     				monAttacks[i] = tempAttack;
     			}
     			
+    			String[] itemString = tempMonster[11].split(",");
+    			Item[] monItems = new Item[2];
+    			for (int i = 0; i < itemString.length; i++) {
+    				Item tempItem = ItemMap.get(itemString[i]);
+    				monItems[i] = tempItem;
+    			}
+    			
     			Monster newMonster = new Monster(tempMonster[0], monElements, monAttacks,
     			 								Integer.parseInt(tempMonster[3]), Integer.parseInt(tempMonster[4]), 
     			 								Integer.parseInt(tempMonster[5]), Integer.parseInt(tempMonster[6]),
     			 								Integer.parseInt(tempMonster[7]), Integer.parseInt(tempMonster[8]), 
-    			 								Integer.parseInt(tempMonster[9]), Integer.parseInt(tempMonster[10]));
+    			 								Integer.parseInt(tempMonster[9]), Integer.parseInt(tempMonster[10]),
+    			 								monItems);
     			MonsterMap.put(tempMonster[0], newMonster);
     			newMonster.printStatus();
     		}
@@ -79,7 +116,9 @@ public class Database {
     		System.out.println(MonsterMap.size());
 			if (sm != null) {
 				sm.close();
-			} if (sa != null) {
+			} if (si != null) {
+				si.close();
+    		} if (sa != null) {
 				sa.close();
 			}
     	}

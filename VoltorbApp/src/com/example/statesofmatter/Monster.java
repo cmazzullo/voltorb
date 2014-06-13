@@ -42,12 +42,12 @@ public class Monster {
     private int intEndur;
     
     // Equipables
-    //private int[] equipment;
+    private Item[] equipment;
 
     public Monster (String name, Element[] elements, Attack[] attacks, 
                     int vitality, int speed, int physStr, 
                     int spiritStr, int intStr, int physEndur, 
-                    int spiritEndur, int intEndur/*, int[] equipment*/) {
+                    int spiritEndur, int intEndur, Item[] equipment) {
         this.name = name;
         this.elements = elements;
         this.attacks = attacks;
@@ -65,8 +65,8 @@ public class Monster {
         status = Status.NORMAL;
         buffdebuff = BuffDebuff.NONE;
         
-        //this.equipment = equipment;
-        //equipment = new int[2];
+        this.equipment = equipment;
+        equipment = new Item[2];
         
     }
 
@@ -151,9 +151,9 @@ public class Monster {
         return intEndur;
     }
     
-    /*public int[] getEquip() {
+    public Item[] getEquip() {
     	return equipment;
-    }*/
+    }
 
     public void printStatus() {
         System.out.printf("name = %s%n" +
@@ -167,10 +167,11 @@ public class Monster {
                           "intStr = %d%n" +
                           "physEndur = %d%n" +
                           "spiritEndur = %d%n" +
-                          "intEndur = %d%n%n",
+                          "intEndur = %d%n" +
+                          "equipped items = %s%n%n",
                           name, Arrays.toString(elements), Arrays.toString(attacks), 
                           hp, vitality, speed, physStr, spiritStr, intStr, 
-                          physEndur, spiritEndur, intEndur);
+                          physEndur, spiritEndur, intEndur, Arrays.toString(equipment));
     }
     
     //methods to check and resolve a Monster's status at the

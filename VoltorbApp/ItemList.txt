@@ -1,0 +1,3 @@
+Health Potion;CURE;CURE_HP;50
+Cure Poison;CURE;CURE_PSN
+Mind Shield;ARMOR
