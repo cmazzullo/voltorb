@@ -70,30 +70,6 @@ public class Monster {
         //equipment = new int[2];
         
     }
-    
-    //temp constructor until Attack and Item classes defined
-    public Monster (String name, Element[] elements, String[] attacks, 
-    				int vitality, int speed, int physStr, 
-    				int spiritStr, int intStr, int physEndur, 
-    				int spiritEndur, int intEndur) {
-    	this.name = name;
-    	this.elements = elements;
-    	this.attackString = attacks;
-    	this.vitality = vitality;
-    	this.speed = speed;
-    	this.physStr = physStr;
-    	this.spiritStr = spiritStr;
-    	this.intStr = intStr;
-    	this.physEndur = physEndur;
-    	this.spiritEndur = spiritEndur;
-    	this.intEndur = intEndur;
-
-    	this.hp = vitality;
-    	state = State.SOLID;
-    	status = Status.NORMAL;
-    	buffdebuff = BuffDebuff.NONE;
-
-    }
 
     /* Boilerplate accessor/modifier methods */
     public int getHP() {
