@@ -1,0 +1,9 @@
+Make Latte;WATER;1
+See Psychiatrist;EARTH;2
+Flap;AIR;3
+Chirp;AIR;4
+Explode;FIRE;5
+Tickle;AIR;6
+Stare Blankly;EARTH;7
+Get Fired;FIRE;8
+Zap;FIRE;9

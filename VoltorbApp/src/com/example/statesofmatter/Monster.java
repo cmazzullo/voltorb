@@ -30,9 +30,9 @@ public class Monster {
 
     // Permanent stats
     private String name;
-    private Element[] types;
+    private Element[] elements;
     private Attack[] attacks;
-    private String[] attackString; //placeholder for temp constructor
+    private String[] attackString = new String[4]; //placeholder for temp constructor
     private int vitality;
     private int speed;
     private int physStr;
@@ -45,12 +45,12 @@ public class Monster {
     // Equipables
     //private int[] equipment;
 
-    public Monster (String name, Element[] types, Attack[] attacks, 
+    public Monster (String name, Element[] elements, Attack[] attacks, 
                     int vitality, int speed, int physStr, 
                     int spiritStr, int intStr, int physEndur, 
                     int spiritEndur, int intEndur/*, int[] equipment*/) {
         this.name = name;
-        this.types = types;
+        this.elements = elements;
         this.attacks = attacks;
         this.vitality = vitality;
         this.speed = speed;
@@ -72,12 +72,12 @@ public class Monster {
     }
     
     //temp constructor until Attack and Item classes defined
-    public Monster (String name, Element[] types, String[] attacks, 
+    public Monster (String name, Element[] elements, String[] attacks, 
     				int vitality, int speed, int physStr, 
     				int spiritStr, int intStr, int physEndur, 
     				int spiritEndur, int intEndur) {
     	this.name = name;
-    	this.types = types;
+    	this.elements = elements;
     	this.attackString = attacks;
     	this.vitality = vitality;
     	this.speed = speed;
@@ -140,8 +140,8 @@ public class Monster {
         return attacks;
     }
 
-    public Element[] getTypes() {
-        return types;
+    public Element[] getElements() {
+        return elements;
     }
 
     public int getVitality() {
@@ -193,7 +193,7 @@ public class Monster {
                           "physEndur = %d%n" +
                           "spiritEndur = %d%n" +
                           "intEndur = %d%n%n",
-                          name, Arrays.toString(types), Arrays.toString(attackString), 
+                          name, Arrays.toString(elements), Arrays.toString(attacks), 
                           hp, vitality, speed, physStr, spiritStr, intStr, 
                           physEndur, spiritEndur, intEndur);
     }

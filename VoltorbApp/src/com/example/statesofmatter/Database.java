@@ -3,6 +3,7 @@ package com.example.statesofmatter;
 import java.util.HashMap;
 import java.io.*;
 import java.util.Scanner;
+import java.util.Arrays;
 
 
 public class Database {
@@ -32,41 +33,59 @@ public class Database {
     }
     
     // read data from txt and add to HashMaps
-    public void getData () throws FileNotFoundException{
-    	Scanner s = null;
+    public void getData () throws FileNotFoundException {
+    	Scanner sa = null;
+    	Scanner sm = null;
     	
     	try {
-    		s = new Scanner(new BufferedReader(new FileReader("MonsterList.txt")));
-    		s.useDelimiter(",");
+    		sa = new Scanner(new BufferedReader(new FileReader("AttackList.txt")));
+    		sm = new Scanner(new BufferedReader(new FileReader("MonsterList.txt")));
+    		AttackMap = new HashMap<String, Attack>();
     		MonsterMap = new HashMap<String, Monster>();
     		
-    		while (s.hasNextLine()) {
-    			String monster = s.nextLine();
-    			String[] temp = monster.split(";");
-    			String[] typeString = temp[1].split(",");
-    			Monster.Element[] types = new Monster.Element[typeString.length];
-    			for (int i = 0; i < typeString.length; i++) {
-    				Monster.Element tempEnum = Monster.Element.valueOf(typeString[i]);
-    				types[i] = tempEnum;
+    		while (sa.hasNextLine()) {
+    			String[] tempAttack = sa.nextLine().split(";");
+    			Attack newAttack = new Attack(tempAttack[0], 
+    										  Attack.Element.valueOf(tempAttack[1]),
+    										  Integer.parseInt(tempAttack[2]));
+    			AttackMap.put(tempAttack[0], newAttack);
+    		} while (sm.hasNextLine()) {	
+    			String[] tempMonster = sm.nextLine().split(";");
+    			String[] elementString = tempMonster[1].split(",");
+    			Monster.Element[] monElements = new Monster.Element[elementString.length];
+    			
+    			for (int i = 0; i < elementString.length; i++) {
+    				Monster.Element tempElement = Monster.Element.valueOf(elementString[i]);
+    				monElements[i] = tempElement;
     			}
-    			Monster newMonster = new Monster(temp[0], types, temp[2].split(","),
-    			 								Integer.parseInt(temp[3]), Integer.parseInt(temp[4]), 
-    			 								Integer.parseInt(temp[5]), Integer.parseInt(temp[6]),
-    			 								Integer.parseInt(temp[7]), Integer.parseInt(temp[8]), 
-    			 								Integer.parseInt(temp[9]), Integer.parseInt(temp[10]));
-    			MonsterMap.put(temp[0], newMonster);
+    			
+    			String[] attString = tempMonster[2].split(",");
+    			Attack[] monAttacks = new Attack[4];
+    			for (int i = 0; i < attString.length; i++) {
+    				Attack tempAttack = AttackMap.get(attString[i]);
+    				monAttacks[i] = tempAttack;
+    			}
+    			
+    			Monster newMonster = new Monster(tempMonster[0], monElements, monAttacks,
+    			 								Integer.parseInt(tempMonster[3]), Integer.parseInt(tempMonster[4]), 
+    			 								Integer.parseInt(tempMonster[5]), Integer.parseInt(tempMonster[6]),
+    			 								Integer.parseInt(tempMonster[7]), Integer.parseInt(tempMonster[8]), 
+    			 								Integer.parseInt(tempMonster[9]), Integer.parseInt(tempMonster[10]));
+    			MonsterMap.put(tempMonster[0], newMonster);
     			newMonster.printStatus();
     		}
     	} catch (FileNotFoundException e) {
-    		System.err.println("File does not exist");
     		throw new FileNotFoundException("Input file could not be found");
     	} finally {
     		System.out.println(MonsterMap.size());
-			if (s != null) {
-				s.close();
+			if (sm != null) {
+				sm.close();
+			} if (sa != null) {
+				sa.close();
 			}
     	}
     }
+    
     public static void main(String[] Args) throws FileNotFoundException {
     	Database test = new Database();
     	test.getData();

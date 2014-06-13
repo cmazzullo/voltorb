@@ -6,7 +6,7 @@ package com.example.statesofmatter;
 
 public class Item {
 	
-	public enum Type {
+	public enum ItemType {
 		CURE, ARMOR, BUFF, SPECIAL
 	}
 }
