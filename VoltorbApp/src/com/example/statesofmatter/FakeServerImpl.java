@@ -42,4 +42,13 @@ public class FakeServerImpl implements Server {
 
     public Monster.State getOpponentState(){return null;}
 
+    public Player getPlayer(String ID) {
+	return null;
+    }
+
+    public Boolean opponentAllFainted() {return null;}
+
+    public Turn getOpponentTurn() {return null;}
+
+    public Player getOpponent() { return null; }
 }

@@ -16,9 +16,17 @@ public interface Server {
 
     PlayerAction getOpponentAction();
 
+    Turn getOpponentTurn();
+
     Monster getOpponentLead();
 
     Attack getOpponentAttack();
 
     Monster.State getOpponentState();
+
+    Boolean opponentAllFainted();
+
+    Player getPlayer(String ID);
+
+    Player getOpponent();
 }
