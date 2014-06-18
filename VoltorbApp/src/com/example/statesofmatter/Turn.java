@@ -1,13 +1,35 @@
 /**
- * This defines an interface for a Turn. When the game starts, each 
- * Player takes a Turn simultaneously. The Turn is then processed and
- * the objects involved in the game are modified according to the 
- * Player's action. 
+ * Implements Turn, allows player to select a PlayerAction and an
+ * index. When the player is switching attack, index selects the
+ * attack to switch to from the Player.attacks array, when switching
+ * Monsters it selects the Monster, etc.
  */
-
 package com.example.statesofmatter;
 
-public interface Turn {
+public class Turn implements TurnInterface {
+
+    private PlayerAction action;
+    private int argument;
     
-    public void executeTurn(Player player);
+    private enum PlayerAction {
+        SWITCH, ATTACK, STATESHIFT, ITEM
+    }
+
+    public Turn () {
+	//Something like this from the user interface would work:
+	//action = UserInterface.getPlayerAction();
+	//argument = UserInterface.getActionArgument();
+    }
+
+    public void executeTurn(Player player) {
+	switch (action) {
+	case SWITCH:
+	    Monster[] team = player.getTeam();
+	    player.setLead(team[argument]);
+	    break;
+	case ATTACK:
+	case STATESHIFT:
+	case ITEM:
+	}
+    }
 }

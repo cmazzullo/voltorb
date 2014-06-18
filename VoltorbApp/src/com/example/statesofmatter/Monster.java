@@ -1,68 +1,180 @@
 /**
- * Interface for a Monster object that has retrievable stats, hit 
- * points and a current state of matter.
+ * Implements a monster object which contains stats (immutable)
+ * as well as HP, state, status, and fainted values (mutable).
  */
 package com.example.statesofmatter;
 
-public interface Monster {
+import java.util.Arrays;
+
+public class Monster implements MonsterInterface {
+
+    // Stats that change
+    private int hp;
+    private State state;
+    private Status status;
+    private BuffDebuff buffdebuff;
+
+    // Permanent stats
+    private String name;
+    private Element[] elements;
+    private Attack[] attacks;
+    private int vitality;
+    private int speed;
+    private int physStr;
+    private int spiritStr;
+    private int intStr;
+    private int physEndur;
+    private int spiritEndur;
+    private int intEndur;
     
-    public enum State {
-        SOLID, LIQUID, GAS, PLASMA
-    }
-    public enum Element {
-        FIRE, WATER, AIR, EARTH, DARK, LIGHT
-    }
-    public enum Status {
-    	NORMAL, POISON, SLEEP, PARALYSIS //etc, add more here
-    }
-    public enum BuffDebuff {
-    	NONE, DE_SPEED, DE_PSTR, DE_SSTR, DE_ISTR, DE_PEND, 
-    	DE_SEND, DE_IEND, BUF_SPEED, BUF_PSTR, BUF_SSTR, 
-    	BUF_ISTR, BUF_PEND, BUF_SEND, BUF_IEND
+    // Equipables
+    private Item[] equipment;
+
+    public Monster (String name, Element[] elements, Attack[] attacks, 
+                    int vitality, int speed, int physStr, 
+                    int spiritStr, int intStr, int physEndur, 
+                    int spiritEndur, int intEndur, Item[] equipment) {
+        this.name = name;
+        this.elements = elements;
+        this.attacks = attacks;
+        this.vitality = vitality;
+        this.speed = speed;
+        this.physStr = physStr;
+        this.spiritStr = spiritStr;
+        this.intStr = intStr;
+        this.physEndur = physEndur;
+        this.spiritEndur = spiritEndur;
+        this.intEndur = intEndur;
+
+        this.hp = vitality;
+        state = State.SOLID;
+        status = Status.NORMAL;
+        buffdebuff = BuffDebuff.NONE;
+        
+        this.equipment = equipment;
+        equipment = new Item[2];
+        
     }
 
     /* Boilerplate accessor/modifier methods */
-    public int getHP();
+    public int getHP() {
+        return hp;
+    }
 
-    public void setHP(int newHP);
+    public void setHP(int newHP) {
+        hp = newHP;
+    }
 
-    public State getState();
+    public State getState() {
+        return state;
+    }
 
-    public void setState(State newState);
+    public void setState(State newState) {
+        state = newState;
+    }
     
-    public Status getStatus();
+    public Status getStatus() {
+    	return status;
+    }
     
-    public void setStatus(Status newStatus);
+    public void setStatus(Status newStatus) {
+    	status = newStatus;
+    }
     
-    public BuffDebuff getBuffDebuff();
+    public BuffDebuff getBuffDebuff() {
+    	return buffdebuff;
+    }
     
-    public void setBuffDebuff(BuffDebuff newBuffDebuff);
+    public void setBuffDebuff(BuffDebuff newBuffDebuff) {
+    	buffdebuff = newBuffDebuff;
+    }
     
-    public boolean isFainted();
+    public boolean isFainted() {
+        return (hp <= 0);
+    }
 
-    public String getName();    
+    public String getName() {
+        return name;
+    }    
 
-    public Attack[] getAttacks();
+    public Attack[] getAttacks() {
+        return attacks;
+    }
 
-    public Element[] getElements();
+    public Element[] getElements() {
+        return elements;
+    }
 
-    public int getVitality();
+    public int getVitality() {
+        return vitality;
+    }
 
-    public int getSpeed();
+    public int getSpeed() {
+        return speed;
+    }
 
-    public int getPhysStr();
+    public int getPhysStr() {
+        return physStr;
+    }
 
-    public int getSpiritStr();
+    public int getSpiritStr() {
+        return spiritStr;
+    }
 
-    public int getIntStr();
+    public int getIntStr() {
+        return intStr;
+    }
 
-    public int getPhysEndur();
+    public int getPhysEndur() {
+        return physEndur;
+    }
 
-    public int getSpiritEndur();
+    public int getSpiritEndur() {
+        return spiritEndur;
+    }
 
-    public int getIntEndur();
+    public int getIntEndur() {
+        return intEndur;
+    }
     
-    public Item[] getEquip();
+    public Item[] getEquip() {
+    	return equipment;
+    }
 
-    public void printStatus();
+    public void printStatus() {
+        System.out.printf("name = %s%n" +
+                          "element = %s%n" +
+                          "attacks = %s%n" +
+        				  "HP = %d%n" +
+                          "vitality = %d%n" +
+                          "speed = %d%n" +
+                          "physStr = %d%n" +
+                          "spiritStr = %d%n" +
+                          "intStr = %d%n" +
+                          "physEndur = %d%n" +
+                          "spiritEndur = %d%n" +
+                          "intEndur = %d%n" +
+                          "equipped items = %s%n%n",
+                          name, Arrays.toString(elements), Arrays.toString(attacks), 
+                          hp, vitality, speed, physStr, spiritStr, intStr, 
+                          physEndur, spiritEndur, intEndur, Arrays.toString(equipment));
+    }
+    
+    //methods to check and resolve a Monster's status at the
+    //beginning of each turn
+    /*private void checkStatus(Status currentStatus, int[] currentEquip) {
+    	currentStatus = this.getStatus();
+    	currentEquip = this.getEquip();
+    	if (currentStatus != Status.NORMAL) {
+    		//count duration
+    	}
+    	if (currentStatus != Status.NORMAL) {
+    		for (int i=0; i<currentEquip.length; i++) {
+    			//if (currentEquip[i].getType() == Item.CURE && 
+    				//currentEquip[i].getCureType == currentStatus.getStatus()) {
+    				//this.useItem(currentEquip[i];
+    			//}
+    		}
+    	}
+    }*/
 }
