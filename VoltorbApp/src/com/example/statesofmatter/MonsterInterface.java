@@ -9,17 +9,6 @@ public interface MonsterInterface {
     public enum State {
         SOLID, LIQUID, GAS, PLASMA
     }
-    public enum Element {
-        FIRE, WATER, AIR, EARTH, DARK, LIGHT
-    }
-    public enum Status {
-    	NORMAL, POISON, SLEEP, PARALYSIS //etc, add more here
-    }
-    public enum BuffDebuff {
-    	NONE, DE_SPEED, DE_PSTR, DE_SSTR, DE_ISTR, DE_PEND, 
-    	DE_SEND, DE_IEND, BUF_SPEED, BUF_PSTR, BUF_SSTR, 
-    	BUF_ISTR, BUF_PEND, BUF_SEND, BUF_IEND
-    }
 
     /* Boilerplate accessor/modifier methods */
     public int getHP();

@@ -4,19 +4,11 @@
  */
 package com.example.statesofmatter;
 
-public class Item {
-	
-	public enum ItemType {
-		CURE, ARMOR, BUFF, SPECIAL
-	}
-	
-	public enum CureType {
-		CURE_HP, CURE_PSN, CURE_SLP, CURE_PRLZ
-	}
+public class Item implements ItemInterface {
 	
 	private String itemName;
 	private ItemType itemType;
-	private CureType cure;
+	private Status cure;
 	private int heal;
 	
 	//constructor methods
@@ -25,16 +17,15 @@ public class Item {
 		this.itemType = itemType;
 	}
 	
-	public Item (String name, ItemType itemType, CureType cure) {
+	public Item (String name, ItemType itemType, Status cure) {
 		this.itemName = name;
 		this.itemType = itemType;
 		this.cure = cure;
 	}
 	
-	public Item (String name, ItemType itemType, CureType cure, int heal) {
+	public Item (String name, ItemType itemType, int heal) {
 		this.itemName = name;
 		this.itemType = itemType;
-		this.cure = cure;
 		this.heal = heal;
 	}
 	
@@ -47,7 +38,7 @@ public class Item {
 		return itemType;
 	}
 	
-	public CureType getCureType() {
+	public Status getCureType() {
 		return cure;
 	}
 	
@@ -55,13 +46,20 @@ public class Item {
 		return heal;
 	}
 	
+	public void cureStatus(Monster monster) {
+		Status currentStatus = monster.getStatus();
+		if (currentStatus == this.cure) {
+			monster.setStatus(Status.NORMAL);
+		}
+	}
+	
 	//format and print methods
 	@Override
 	public String toString() {
-		if (cure == CureType.CURE_HP) {
+		if (itemType == ItemType.HEAL) {
 			return String.format("%s:%s:%s:%d",
-								 itemName, itemType, cure, heal);
-		} else if (cure != CureType.CURE_HP && cure != null) {
+								 itemName, itemType, heal);
+		} else if (itemType == ItemType.CURE) {
 			return String.format("%s:%s:%s",
 					 			 itemName, itemType, cure);
 		} else {

@@ -57,21 +57,20 @@ public class Database {
     		while (sa.hasNextLine()) {
     			String[] tempAttack = sa.nextLine().split(";");
     			Attack newAttack = new Attack(tempAttack[0], 
-    										  Attack.Element.valueOf(tempAttack[1]),
+    										  Element.valueOf(tempAttack[1]),
     										  Integer.parseInt(tempAttack[2]));
     			AttackMap.put(tempAttack[0], newAttack);
     		} while (si.hasNextLine()) {
     			String[] tempItem = si.nextLine().split(";");
     			Item newItem;
-    			if (tempItem.length == 4) {
+    			if (tempItem.length == 3 && tempItem[2].length() <= 5) {
     				newItem = new Item(tempItem[0], 
     								   Item.ItemType.valueOf(tempItem[1]),
-    								   Item.CureType.valueOf(tempItem[2]),
-    								   Integer.parseInt(tempItem[3]));
-    			} else if (tempItem.length == 3) {
+    								   Integer.parseInt(tempItem[2]));
+    			} else if (tempItem.length == 3 && tempItem[2].length() > 5) {
     				newItem = new Item(tempItem[0], 
 							  		   Item.ItemType.valueOf(tempItem[1]),
-							  		   Item.CureType.valueOf(tempItem[2]));
+							  		   Status.valueOf(tempItem[2]));
     			} else {
     				newItem = new Item(tempItem[0], 
 							  		   Item.ItemType.valueOf(tempItem[1]));
@@ -80,10 +79,10 @@ public class Database {
     		} while (sm.hasNextLine()) {	
     			String[] tempMonster = sm.nextLine().split(";");
     			String[] elementString = tempMonster[1].split(",");
-    			Monster.Element[] monElements = new Monster.Element[elementString.length];
+    			Element[] monElements = new Element[elementString.length];
     			
     			for (int i = 0; i < elementString.length; i++) {
-    				Monster.Element tempElement = Monster.Element.valueOf(elementString[i]);
+    				Element tempElement = Element.valueOf(elementString[i]);
     				monElements[i] = tempElement;
     			}
     			
