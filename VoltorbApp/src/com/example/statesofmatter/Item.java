@@ -57,7 +57,7 @@ public class Item implements ItemInterface {
 	@Override
 	public String toString() {
 		if (itemType == ItemType.HEAL) {
-			return String.format("%s:%s:%s:%d",
+			return String.format("%s:%s:%d",
 								 itemName, itemType, heal);
 		} else if (itemType == ItemType.CURE) {
 			return String.format("%s:%s:%s",

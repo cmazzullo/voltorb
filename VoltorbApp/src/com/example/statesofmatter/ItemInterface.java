@@ -15,8 +15,6 @@ public interface ItemInterface {
 	
 	public int getHeal();
 	
-	public void cureStatus(Monster monster);
-	
 	//format and print methods
 	@Override
 	public String toString();

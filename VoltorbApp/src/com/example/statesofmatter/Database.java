@@ -7,13 +7,22 @@ import java.util.Scanner;
 
 public class Database {
     
-    private HashMap<String, Monster> MonsterMap;
-    private HashMap<String, Attack> AttackMap;
-    private HashMap<String, Item> ItemMap;
+    public HashMap<String, Monster> MonsterMap;
+    public HashMap<String, Attack> AttackMap;
+    public HashMap<String, Item> ItemMap;
+    private String attackFile;
+    private String itemFile;
+    private String monsterFile;
 
     public Database () {
         // We need to read in all the Monster and Attack data from
         // text files or something here
+    }
+    
+    public Database (String attackFile, String itemFile, String monsterFile) {
+    	this.attackFile = attackFile;
+    	this.itemFile = itemFile;
+    	this.monsterFile = monsterFile;
     }
  
     public Monster getMonster (String name) throws Exception {
@@ -47,9 +56,9 @@ public class Database {
     	Scanner sm = null;
     	
     	try {
-    		sa = new Scanner(new BufferedReader(new FileReader("AttackList.txt")));
-    		si = new Scanner(new BufferedReader(new FileReader("ItemList.txt")));
-    		sm = new Scanner(new BufferedReader(new FileReader("MonsterList.txt")));
+    		sa = new Scanner(new BufferedReader(new FileReader(attackFile)));
+    		si = new Scanner(new BufferedReader(new FileReader(itemFile)));
+    		sm = new Scanner(new BufferedReader(new FileReader(monsterFile)));
     		AttackMap = new HashMap<String, Attack>();
     		ItemMap = new HashMap<String, Item>();
     		MonsterMap = new HashMap<String, Monster>();
@@ -107,12 +116,12 @@ public class Database {
     			 								Integer.parseInt(tempMonster[9]), Integer.parseInt(tempMonster[10]),
     			 								monItems);
     			MonsterMap.put(tempMonster[0], newMonster);
-    			newMonster.printStatus();
+    			//newMonster.printStatus();
     		}
     	} catch (FileNotFoundException e) {
     		throw new FileNotFoundException("Input file could not be found");
     	} finally {
-    		System.out.println(MonsterMap.size());
+    		//System.out.println(MonsterMap.size());
 			if (sm != null) {
 				sm.close();
 			} if (si != null) {
