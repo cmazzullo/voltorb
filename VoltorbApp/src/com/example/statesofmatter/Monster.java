@@ -143,6 +143,18 @@ public class Monster implements MonsterInterface {
 
     @Override
     public String toString() {
+    	String[] attackNames = new String[4];
+    	String[] itemNames = new String[2];
+		for (int i = 0; i < attacks.length; i++) {
+			if (attacks[i] != null) {
+				attackNames[i] = attacks[i].getName();
+			}
+		}
+		for (int i = 0; i < equipment.length; i++) {
+			if (equipment[i] != null) {
+				itemNames[i] = equipment[i].getName();
+			}
+		}
     	return String.format("name = %s%n" +
                 	  		 "element = %s%n" +
                 	  		 "attacks = %s%n" +
@@ -156,12 +168,24 @@ public class Monster implements MonsterInterface {
                 	  		 "spiritEndur = %d%n" +
                 	  		 "intEndur = %d%n" +
                 	  		 "equipped items = %s%n%n",
-                	  		 name, Arrays.toString(elements), Arrays.toString(attacks), 
+                	  		 name, Arrays.toString(elements), Arrays.toString(attackNames), 
                 	  		 hp, vitality, speed, physStr, spiritStr, intStr, 
-                	  		 physEndur, spiritEndur, intEndur, Arrays.toString(equipment));
+                	  		 physEndur, spiritEndur, intEndur, Arrays.toString(itemNames));
     }
 
     public void printStatus() {
+    	String[] attackNames = new String[4];
+    	String[] itemNames = new String[2];
+		for (int i = 0; i < attacks.length; i++) {
+			if (attacks[i] != null) {
+				attackNames[i] = attacks[i].getName();
+			}
+		}
+		for (int i = 0; i < equipment.length; i++) {
+			if (equipment[i] != null) {
+				itemNames[i] = equipment[i].getName();
+			}
+		}
         System.out.printf("name = %s%n" +
                           "element = %s%n" +
                           "attacks = %s%n" +

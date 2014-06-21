@@ -49,7 +49,9 @@ public class Attack implements AttackInterface {
 	//string methods
 	@Override
 	public String toString() {
-		return String.format("%s:%s:%d",
+		return String.format("attack name = %s%n" +
+							 "attack element = %s%n" +
+							 "base damage = %d%n%n",
 							 name, element, baseDamage);
 	}
 	

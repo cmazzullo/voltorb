@@ -57,13 +57,37 @@ public class Item implements ItemInterface {
 	@Override
 	public String toString() {
 		if (itemType == ItemType.HEAL) {
-			return String.format("%s:%s:%d",
-								 itemName, itemType, heal);
+			return String.format("name = %s%n" +
+							  	 "item type = %s%n" +
+							  	 "base heal = %d%n%n",
+							  	 itemName, itemType, heal);
 		} else if (itemType == ItemType.CURE) {
-			return String.format("%s:%s:%s",
-					 			 itemName, itemType, cure);
+			return String.format("name = %s%n" +
+								 "item type = %s%n" +
+								 "cure type = %s%n%n",
+								 itemName, itemType, cure);
 		} else {
-			return String.format("%s:%s", itemName, itemType);
+			return String.format("name = %s%n" +
+								 "item type = %s%n",
+								 itemName, itemType);
+		}
+	}
+	
+	public void printItem() {
+		if (itemType == ItemType.HEAL) {
+			System.out.printf("name = %s%n" +
+							  "item type = %s%n" +
+							  "base heal = %d%n%n",
+							  itemName, itemType, heal);
+		} else if (itemType == ItemType.CURE) {
+			System.out.printf("name = %s%n" +
+					  		  "item type = %s%n" +
+					  		  "cure type = %s%n%n",
+					  		  itemName, itemType, cure);
+		} else {
+			System.out.printf("name = %s%n" +
+					  		  "item type = %s%n",
+					  		  itemName, itemType);
 		}
 	}
 }
