@@ -141,6 +141,26 @@ public class Monster implements MonsterInterface {
     	return equipment;
     }
 
+    @Override
+    public String toString() {
+    	return String.format("name = %s%n" +
+                	  		 "element = %s%n" +
+                	  		 "attacks = %s%n" +
+                	  		 "HP = %d%n" +
+                	  		 "vitality = %d%n" +
+                	  		 "speed = %d%n" +
+                	  		 "physStr = %d%n" +
+                	  		 "spiritStr = %d%n" +
+                	  		 "intStr = %d%n" +
+                	  		 "physEndur = %d%n" +
+                	  		 "spiritEndur = %d%n" +
+                	  		 "intEndur = %d%n" +
+                	  		 "equipped items = %s%n%n",
+                	  		 name, Arrays.toString(elements), Arrays.toString(attacks), 
+                	  		 hp, vitality, speed, physStr, spiritStr, intStr, 
+                	  		 physEndur, spiritEndur, intEndur, Arrays.toString(equipment));
+    }
+
     public void printStatus() {
         System.out.printf("name = %s%n" +
                           "element = %s%n" +
