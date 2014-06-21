@@ -32,20 +32,30 @@ public class Player implements PlayerInterface {
     	return lead;
     }
 
+    public void setTeam(Monster[] team) throws Exception {
+    	try {
+    		if (team.length == MAX_TEAM_SIZE) {
+    			this.team = team;
+    		}
+    	} catch (Exception e) {
+    		throw new Exception("Team size must be 6.");
+    	}
+    }
+    
     public void setLead(Monster m) {
     	lead = m;
     }
 
     public Boolean allFainted() {
 
-	for (int i = 0; i < MAX_TEAM_SIZE; i++) {
-	    Monster m = team[i];
-	    if (m.getHP() > 0) {
-		return false;
-	    }
-	}
-	return true;
-    }
+    	for (int i = 0; i < MAX_TEAM_SIZE; i++) {
+    		Monster m = team[i];
+    		if (m.getHP() > 0) {
+    			return false;
+    		}
+    	}
+    	return true;
+    	}
     
     public void addMonster(Monster m, int position) throws Exception {
     	if(position >= MAX_TEAM_SIZE) throw new Exception("Position is exceeds team size limit.  position = " + position);
@@ -54,7 +64,12 @@ public class Player implements PlayerInterface {
     }
     
     public void removeMonster(Monster m, int position) throws Exception {
-    	if(position == 0) throw new Exception("There are no monster on your team.");
+    	int size = 0;
+    	for (int i = 0; i < MAX_TEAM_SIZE; i++) {
+    		if (team[i] != null)
+    			size++;
+    	}
+    	if(size == 0) throw new Exception("There are no monsters on your team.");
     	if(m == null) throw new Exception("Paramater Monster is null.");
     	team[position] = null;
     }
