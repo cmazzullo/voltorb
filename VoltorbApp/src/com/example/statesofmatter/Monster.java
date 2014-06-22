@@ -9,7 +9,7 @@ import java.util.Arrays;
 public class Monster implements MonsterInterface {
 
     // Stats that change
-    private int hp;
+    private int currentHP;
     private State state;
     private Status status;
     private BuffDebuff buffdebuff;
@@ -18,7 +18,7 @@ public class Monster implements MonsterInterface {
     private String name;
     private Element[] elements;
     private Attack[] attacks;
-    private int vitality;
+    private int maxHP;
     private int speed;
     private int physStr;
     private int spiritStr;
@@ -31,13 +31,13 @@ public class Monster implements MonsterInterface {
     private Item[] equipment;
 
     public Monster (String name, Element[] elements, Attack[] attacks, 
-                    int vitality, int speed, int physStr, 
+                    int maxHP, int speed, int physStr, 
                     int spiritStr, int intStr, int physEndur, 
                     int spiritEndur, int intEndur, Item[] equipment) {
         this.name = name;
         this.elements = elements;
         this.attacks = attacks;
-        this.vitality = vitality;
+        this.maxHP = maxHP;
         this.speed = speed;
         this.physStr = physStr;
         this.spiritStr = spiritStr;
@@ -46,7 +46,7 @@ public class Monster implements MonsterInterface {
         this.spiritEndur = spiritEndur;
         this.intEndur = intEndur;
 
-        this.hp = vitality;
+        this.currentHP = maxHP;
         state = State.SOLID;
         status = Status.NORMAL;
         buffdebuff = BuffDebuff.NONE;
@@ -58,11 +58,11 @@ public class Monster implements MonsterInterface {
 
     /* Boilerplate accessor/modifier methods */
     public int getHP() {
-        return hp;
+        return currentHP;
     }
 
     public void setHP(int newHP) {
-        hp = newHP;
+        currentHP = newHP;
     }
 
     public State getState() {
@@ -90,7 +90,7 @@ public class Monster implements MonsterInterface {
     }
     
     public boolean isFainted() {
-        return (hp <= 0);
+        return (currentHP <= 0);
     }
 
     public String getName() {
@@ -105,8 +105,8 @@ public class Monster implements MonsterInterface {
         return elements;
     }
 
-    public int getVitality() {
-        return vitality;
+    public int getmaxHP() {
+        return maxHP;
     }
 
     public int getSpeed() {
@@ -159,7 +159,7 @@ public class Monster implements MonsterInterface {
                 	  		 "element = %s%n" +
                 	  		 "attacks = %s%n" +
                 	  		 "HP = %d%n" +
-                	  		 "vitality = %d%n" +
+                	  		 "maxHP = %d%n" +
                 	  		 "speed = %d%n" +
                 	  		 "physStr = %d%n" +
                 	  		 "spiritStr = %d%n" +
@@ -169,7 +169,7 @@ public class Monster implements MonsterInterface {
                 	  		 "intEndur = %d%n" +
                 	  		 "equipped items = %s%n%n",
                 	  		 name, Arrays.toString(elements), Arrays.toString(attackNames), 
-                	  		 hp, vitality, speed, physStr, spiritStr, intStr, 
+                	  		 currentHP, maxHP, speed, physStr, spiritStr, intStr, 
                 	  		 physEndur, spiritEndur, intEndur, Arrays.toString(itemNames));
     }
 
@@ -190,7 +190,7 @@ public class Monster implements MonsterInterface {
                           "element = %s%n" +
                           "attacks = %s%n" +
         				  "HP = %d%n" +
-                          "vitality = %d%n" +
+                          "maxHP = %d%n" +
                           "speed = %d%n" +
                           "physStr = %d%n" +
                           "spiritStr = %d%n" +
@@ -200,7 +200,7 @@ public class Monster implements MonsterInterface {
                           "intEndur = %d%n" +
                           "equipped items = %s%n%n",
                           name, Arrays.toString(elements), Arrays.toString(attacks), 
-                          hp, vitality, speed, physStr, spiritStr, intStr, 
+                          currentHP, maxHP, speed, physStr, spiritStr, intStr, 
                           physEndur, spiritEndur, intEndur, Arrays.toString(equipment));
     }
     
