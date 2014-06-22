@@ -11,14 +11,9 @@ public class Turn implements TurnInterface {
     private PlayerAction action;
     private int argument;
     
-    private enum PlayerAction {
-        SWITCH, ATTACK, STATESHIFT, ITEM
-    }
-
-    public Turn () {
-	//Something like this from the user interface would work:
-	//action = UserInterface.getPlayerAction();
-	//argument = UserInterface.getActionArgument();
+    public Turn (PlayerAction action, int argument) {
+    	this.action = action;
+    	this.argument = argument;
     }
 
     public void executeTurn(Player player) {
@@ -32,4 +27,13 @@ public class Turn implements TurnInterface {
 	case ITEM:
 	}
     }
+    
+    public PlayerAction getAction(){
+    	return action;
+    }
+    
+    public int getArgument(){
+    	return argument;
+    }
+    
 }

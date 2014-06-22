@@ -16,8 +16,71 @@ public class LocalGameRunner {
 		server.opponentAllFainted());
     }
 
-    private static void doMyTurn(Player player, Server server) {
-	//Turn turn = UserInterface.getMyTurn();
+    private static void doTurns(Player player, Server server) {
+    	Turn myTurn = TextUserInterface.getTurn();
+        Turn oppTurn = server.getOpponentTurn();
+        //calculate turn
+        PlayerAction myAction = myTurn.getAction();
+        PlayerAction oppAction = oppTurn.getAction();
+        boolean myComplete = false;
+        boolean oppComplete = false;
+        
+        //make speed comparison
+        
+        boolean meFirst = false;
+        if(player.getLead().getSpeed() > server.getOpponent().getLead().getSpeed()){
+        	meFirst = true;
+        }else if(player.getLead().getSpeed() == server.getOpponent().getLead().getSpeed()){
+        	//TODO:  What to do during speed tie
+        }
+        
+        if(myAction == PlayerAction.SWITCH || oppAction == PlayerAction.SWITCH){
+        	if(meFirst && myAction == PlayerAction.SWITCH){
+        		player.switchLead(myTurn.getArgument());
+        		myComplete = true;
+        	}
+        	if(oppAction == PlayerAction.SWITCH){
+        		//switch
+        		oppComplete = false;
+        	}
+        	if(!meFirst && myAction == PlayerAction.SWITCH){
+        		//switch
+        		myComplete = true;
+        	}
+        }
+        
+        if(!myComplete && meFirst){
+        	if(myAction == PlayerAction.ATTACK){
+        	}
+        	else if(myAction == PlayerAction.ITEM){
+        	}
+        	else if(myAction == PlayerAction.STATESHIFT){
+        	}
+        	else if(myAction == PlayerAction.PASS){
+        	}
+        }
+        
+        if(!oppComplete){
+        	if(oppAction == PlayerAction.ATTACK){
+        	}
+        	else if(oppAction == PlayerAction.ITEM){
+        	}
+        	else if(oppAction == PlayerAction.STATESHIFT){
+        	}
+        	else if(oppAction == PlayerAction.PASS){
+        	}      	
+        }
+        
+        if(!myComplete && !meFirst){
+        	if(myAction == PlayerAction.ATTACK){
+        	}
+        	else if(myAction == PlayerAction.ITEM){
+        	}
+        	else if(myAction == PlayerAction.STATESHIFT){
+        	}
+        	else if(myAction == PlayerAction.PASS){
+        	}
+        }
     }
 
     private static void doPostGame() {
@@ -27,15 +90,14 @@ public class LocalGameRunner {
     public static void main(String[] args) {
         //need to put playerdata in here
         //both players need to act at the same time
-	String ID = "";
-	String playername = "";
+    	String ID = "";
+    	String playername = "";
         Server server = new FakeServerImpl();
         Player player = server.getPlayer(ID);
-	Player opponent = server.getOpponent();
+        Player opponent = server.getOpponent();
         while (!isGameOver(player, server)) {
-            doMyTurn(player, server);
-            Turn opponentTurn = server.getOpponentTurn();
-	    opponentTurn.executeTurn(opponent);
+            doTurns(player, server);
+            //opponentTurn.executeTurn(opponent);
         }
         doPostGame();
     }

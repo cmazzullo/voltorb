@@ -45,6 +45,10 @@ public class Player implements PlayerInterface {
     public void setLead(Monster m) {
     	lead = m;
     }
+    
+    public void switchLead(int index) {
+    	lead = team[index];
+    }
 
     public Boolean allFainted() {
 
