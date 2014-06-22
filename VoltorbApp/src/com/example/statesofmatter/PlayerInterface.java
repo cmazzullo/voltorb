@@ -9,4 +9,5 @@ public interface PlayerInterface {
     void setLead(Monster m);
     void addMonster(Monster m, int position) throws Exception;
     Boolean allFainted();
+    public void switchLead(int index);
 }
