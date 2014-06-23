@@ -40,7 +40,7 @@ public class TextUserInterface {
 			break;
 		case 3: 
 			System.out.println("Changing State!");
-			action = PlayerAction.STATESHIFT;
+			action = PlayerAction.STATE_SHIFT;
 			break;
 		case 4:
 			System.out.println("Using Item!");

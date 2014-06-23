@@ -23,7 +23,7 @@ public class Turn implements TurnInterface {
 	    player.setLead(team[argument]);
 	    break;
 	case ATTACK:
-	case STATESHIFT:
+	case STATE_SHIFT:
 	case ITEM:
 	}
     }

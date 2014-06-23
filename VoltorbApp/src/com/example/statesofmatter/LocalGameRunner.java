@@ -19,6 +19,8 @@ public class LocalGameRunner {
     private static void doTurns(Player player, Server server) {
     	Turn myTurn = TextUserInterface.getTurn();
         Turn oppTurn = server.getOpponentTurn();
+        Monster myLead = player.getLead();
+        Monster oppLead = server.getOpponent().getLead();
         //calculate turn
         PlayerAction myAction = myTurn.getAction();
         PlayerAction oppAction = oppTurn.getAction();
@@ -28,15 +30,16 @@ public class LocalGameRunner {
         //make speed comparison
         
         boolean meFirst = false;
-        if(player.getLead().getSpeed() > server.getOpponent().getLead().getSpeed()){
+        if(myLead.getSpeed() > oppLead.getSpeed()){
         	meFirst = true;
-        }else if(player.getLead().getSpeed() == server.getOpponent().getLead().getSpeed()){
+        }else if(myLead.getSpeed() == oppLead.getSpeed()){
         	//TODO:  What to do during speed tie
         }
         
         if(myAction == PlayerAction.SWITCH || oppAction == PlayerAction.SWITCH){
         	if(meFirst && myAction == PlayerAction.SWITCH){
         		player.switchLead(myTurn.getArgument());
+        		myLead = player.getLead();
         		myComplete = true;
         	}
         	if(oppAction == PlayerAction.SWITCH){
@@ -54,7 +57,7 @@ public class LocalGameRunner {
         	}
         	else if(myAction == PlayerAction.ITEM){
         	}
-        	else if(myAction == PlayerAction.STATESHIFT){
+        	else if(myAction == PlayerAction.STATE_SHIFT){
         	}
         	else if(myAction == PlayerAction.PASS){
         	}
@@ -65,7 +68,7 @@ public class LocalGameRunner {
         	}
         	else if(oppAction == PlayerAction.ITEM){
         	}
-        	else if(oppAction == PlayerAction.STATESHIFT){
+        	else if(oppAction == PlayerAction.STATE_SHIFT){
         	}
         	else if(oppAction == PlayerAction.PASS){
         	}      	
@@ -76,7 +79,7 @@ public class LocalGameRunner {
         	}
         	else if(myAction == PlayerAction.ITEM){
         	}
-        	else if(myAction == PlayerAction.STATESHIFT){
+        	else if(myAction == PlayerAction.STATE_SHIFT){
         	}
         	else if(myAction == PlayerAction.PASS){
         	}
