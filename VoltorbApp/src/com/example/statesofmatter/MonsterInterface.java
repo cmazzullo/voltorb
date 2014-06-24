@@ -6,10 +6,6 @@ package com.example.statesofmatter;
 
 public interface MonsterInterface {
     
-    public enum State {
-        SOLID, LIQUID, GAS, PLASMA
-    }
-
     /* Boilerplate accessor/modifier methods */
     public int getHP();
 

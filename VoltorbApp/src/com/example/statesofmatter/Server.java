@@ -12,7 +12,7 @@ public interface Server {
 
     Attack sendMyAttack();
 
-    Monster.State sendMyState();
+    State sendMyState();
 
     PlayerAction getOpponentAction();
 
@@ -22,7 +22,7 @@ public interface Server {
 
     Attack getOpponentAttack();
 
-    Monster.State getOpponentState();
+    State getOpponentState();
 
     Boolean opponentAllFainted();
 

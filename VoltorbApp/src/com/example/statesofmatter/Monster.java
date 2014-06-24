@@ -157,6 +157,7 @@ public class Monster implements MonsterInterface {
 		}
     	return String.format("name = %s%n" +
                 	  		 "element = %s%n" +
+                	  		 "state = %s%n" +
                 	  		 "attacks = %s%n" +
                 	  		 "HP = %d%n" +
                 	  		 "maxHP = %d%n" +
@@ -168,7 +169,7 @@ public class Monster implements MonsterInterface {
                 	  		 "spiritEndur = %d%n" +
                 	  		 "intEndur = %d%n" +
                 	  		 "equipped items = %s%n%n",
-                	  		 name, Arrays.toString(elements), Arrays.toString(attackNames), 
+                	  		 name, Arrays.toString(elements), state, Arrays.toString(attackNames), 
                 	  		 currentHP, maxHP, speed, physStr, spiritStr, intStr, 
                 	  		 physEndur, spiritEndur, intEndur, Arrays.toString(itemNames));
     }
@@ -188,6 +189,7 @@ public class Monster implements MonsterInterface {
 		}
         System.out.printf("name = %s%n" +
                           "element = %s%n" +
+                          "state = %s%n" +
                           "attacks = %s%n" +
         				  "HP = %d%n" +
                           "maxHP = %d%n" +
@@ -199,7 +201,7 @@ public class Monster implements MonsterInterface {
                           "spiritEndur = %d%n" +
                           "intEndur = %d%n" +
                           "equipped items = %s%n%n",
-                          name, Arrays.toString(elements), Arrays.toString(attacks), 
+                          name, Arrays.toString(elements), state, Arrays.toString(attacks), 
                           currentHP, maxHP, speed, physStr, spiritStr, intStr, 
                           physEndur, spiritEndur, intEndur, Arrays.toString(equipment));
     }

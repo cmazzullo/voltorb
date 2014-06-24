@@ -32,7 +32,7 @@ public class FakeServerImpl implements Server {
 
     public Attack sendMyAttack(){return null;}
 
-    public Monster.State sendMyState(){return null;}
+    public State sendMyState(){return null;}
 
     public PlayerAction getOpponentAction(){return null;}
 
@@ -40,7 +40,7 @@ public class FakeServerImpl implements Server {
 
     public Attack getOpponentAttack(){return null;}
 
-    public Monster.State getOpponentState(){return null;}
+    public State getOpponentState(){return null;}
 
     public Player getPlayer(String ID) {
 	return null;
