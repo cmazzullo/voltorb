@@ -4,7 +4,7 @@ public class Player implements PlayerInterface {
 
     private String name;
     private String ID;//get from Android phone
-    private final int MAX_TEAM_SIZE = 6;
+    public final int MAX_TEAM_SIZE = 6;
     
     private Monster[] team;
     //The lead is the Player's currently active Monster
@@ -61,7 +61,7 @@ public class Player implements PlayerInterface {
     	}
     
     public void addMonster(Monster m, int position) throws Exception {
-    	if(position >= MAX_TEAM_SIZE) throw new Exception("Position is exceeds team size limit.  position = " + position);
+    	if(position >= MAX_TEAM_SIZE) throw new Exception("Position exceeds team size limit.  position = " + position);
     	if(m == null) throw new Exception("Paramater Monster is null.");
     	team[position] = m;
     }

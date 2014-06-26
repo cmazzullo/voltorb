@@ -11,9 +11,9 @@ import java.io.*;
 
 public class LocalGameRunner {
 	
-	private String attackFile;
-	private String itemFile;
-	private String monsterFile;
+	public String attackFile;
+	public String itemFile;
+	public String monsterFile;
 	private Database d;
 	public static FakeServer server = new FakeServer(); //until connect function in SoMStart works
 	private String playerID;
@@ -26,6 +26,7 @@ public class LocalGameRunner {
 	private int argument;
 	
 	public void start() throws Exception, FileNotFoundException {
+		playerID = this.fetchID();
 		d = new Database(attackFile, itemFile, monsterFile);
 		d.getData();
 		player = new Player(server.getPlayerName(playerID), playerID);
@@ -34,7 +35,7 @@ public class LocalGameRunner {
 	public String fetchID() throws IOException, FileNotFoundException {
 		BufferedReader br = null;
 		try {
-			br = new BufferedReader(new FileReader("PlayerID"));
+			br = new BufferedReader(new FileReader("PlayerID.txt"));
 			playerID = br.readLine();		
 			return playerID;
 		} catch (FileNotFoundException e) {
@@ -63,6 +64,48 @@ public class LocalGameRunner {
 	
 	public Player getPlayer() {
 		return player;
+	}
+	
+	public void addToTeam(String monster, int fromIndex) throws Exception{
+		int count = 0;
+		for (Monster m : player.getTeam()) {
+			if (m != null)
+				count++;
+		}
+		if (count < player.MAX_TEAM_SIZE && fromIndex >= 0) {
+			Monster newMonster = d.MonsterMap.get(monster);
+			boolean added = false;
+			int indexToAdd = 0;
+			while (!added) {
+				if (player.getTeam()[indexToAdd] == null) {
+					player.addMonster(newMonster, indexToAdd);
+					added = true;
+				} else {
+					indexToAdd++;
+				}
+			}
+		}
+	}
+	
+	public void removeFromTeam(String monster, int fromIndex) throws Exception {
+		int count = 0;
+		for (Monster m : player.getTeam()) {
+			if (m != null)
+				count++;
+		} 
+		if (count > 0 && fromIndex >= 0) {
+			Monster[] updatedTeam = new Monster[6];
+			Monster toRemove = d.MonsterMap.get(monster);
+			int nextIndex = 0;
+			player.removeMonster(toRemove, fromIndex);
+			for (Monster m : player.getTeam()) {
+				if (m != null) {
+					updatedTeam[nextIndex] = m;
+					nextIndex++;
+				}
+			}
+			player.setTeam(updatedTeam);
+		}
 	}
 	
     //All of these methods should go into a separate game logic class
