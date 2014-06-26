@@ -25,7 +25,7 @@ public class TextUserInterface {
 		return line;
 	}
 	
-	public static Turn getTurn() {
+	/*public static Turn getTurn() {
 		String prompt = "What would you like to do?\n1. Attack\n2. Switch\n3. Change State\n4. Use Item\n";
 		Integer userInput = Integer.parseInt(input(prompt));
 		PlayerAction action = PlayerAction.PASS;
@@ -51,5 +51,5 @@ public class TextUserInterface {
 		userInput = Integer.parseInt(input(prompt));
 		int argument = userInput;
 		return new Turn(action, argument);
-	}
+	}*/
 }

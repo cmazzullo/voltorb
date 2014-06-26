@@ -50,8 +50,7 @@ public class Player implements PlayerInterface {
     	lead = team[index];
     }
 
-    public Boolean allFainted() {
-
+    public boolean allFainted() {
     	for (int i = 0; i < MAX_TEAM_SIZE; i++) {
     		Monster m = team[i];
     		if (m.getHP() > 0) {

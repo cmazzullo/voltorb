@@ -10,22 +10,28 @@ public class Turn implements TurnInterface {
 
     private PlayerAction action;
     private int argument;
+    private boolean isDone;
     
     public Turn (PlayerAction action, int argument) {
     	this.action = action;
     	this.argument = argument;
+    	this.isDone = false;
     }
-
+    
     public void executeTurn(Player player) {
-	switch (action) {
-	case SWITCH:
-	    Monster[] team = player.getTeam();
-	    player.setLead(team[argument]);
-	    break;
-	case ATTACK:
-	case STATE_SHIFT:
-	case ITEM:
-	}
+    	switch (action) {
+			case SWITCH:
+				Monster[] team = player.getTeam();
+				player.setLead(team[argument]);
+				setIsDone(true);
+				break;
+			case ATTACK:
+				
+			case STATE_SHIFT:
+				Monster toShift = player.getTeam()[argument];
+				
+			case ITEM:
+    	}
     }
     
     public PlayerAction getAction(){
@@ -36,4 +42,11 @@ public class Turn implements TurnInterface {
     	return argument;
     }
     
+    public boolean getIsDone() {
+    	return isDone;
+    }
+    
+    public void setIsDone(boolean isDone) {
+    	this.isDone = isDone;
+    }
 }

@@ -8,17 +8,21 @@
 package com.example.statesofmatter;
 
 public class LocalGameRunner {
-
+	
+	private static start() {
+		
+	}
+	
     //All of these methods should go into a separate game logic class
-    private static Boolean isGameOver(Player player, Server server) {
+    public static boolean isGameOver(Player player, FakeServer server) {
 	
         return (player.allFainted() ||
-		server.opponentAllFainted());
+		server.getOpponent().allFainted());
     }
-
-    private static void doTurns(Player player, Server server) {
+    
+    private static void doTurns(Player player, FakeServer server) {
     	Turn myTurn = TextUserInterface.getTurn();
-        Turn oppTurn = server.getOpponentTurn();
+        Turn oppTurn = server.getTurn(server.getPlayer(""));
         Monster myLead = player.getLead();
         Monster oppLead = server.getOpponent().getLead();
         //calculate turn
@@ -32,8 +36,11 @@ public class LocalGameRunner {
         boolean meFirst = false;
         if(myLead.getSpeed() > oppLead.getSpeed()){
         	meFirst = true;
-        }else if(myLead.getSpeed() == oppLead.getSpeed()){
+        }else if (myLead.getSpeed() == oppLead.getSpeed()) {
         	//TODO:  What to do during speed tie
+        	//send isTied boolean to server, server does tie-breaker only,
+        	//sends result back to clients. First client executes turn and sends
+        	//results to server, to second client, second client goes.
         }
         
         if(myAction == PlayerAction.SWITCH || oppAction == PlayerAction.SWITCH){
@@ -93,13 +100,13 @@ public class LocalGameRunner {
     public static void main(String[] args) {
         //need to put playerdata in here
         //both players need to act at the same time
-    	String ID = "";
-    	String playername = "";
-        Server server = new FakeServerImpl();
-        Player player = server.getPlayer(ID);
-        Player opponent = server.getOpponent();
-        while (!isGameOver(player, server)) {
-            doTurns(player, server);
+    	String ID1 = "";
+    	String myName = "";
+        FakeServer server = new FakeServer();
+        Player me = server.getPlayer(ID1);
+        Player opponent = server.getPlayer(ID2);
+        while (!isGameOver(me, server)) {
+            doTurns(me, server);
             //opponentTurn.executeTurn(opponent);
         }
         doPostGame();

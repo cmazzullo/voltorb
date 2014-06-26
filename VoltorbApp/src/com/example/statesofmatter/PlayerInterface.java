@@ -8,6 +8,6 @@ public interface PlayerInterface {
     Monster getLead();
     void setLead(Monster m);
     void addMonster(Monster m, int position) throws Exception;
-    Boolean allFainted();
+    boolean allFainted();
     public void switchLead(int index);
 }

@@ -53,7 +53,6 @@ public class Monster implements MonsterInterface {
         
         this.equipment = equipment;
         equipment = new Item[2];
-        
     }
 
     /* Boilerplate accessor/modifier methods */

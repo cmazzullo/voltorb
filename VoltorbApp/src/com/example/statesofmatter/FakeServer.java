@@ -7,13 +7,13 @@ package com.example.statesofmatter;
 
 import java.io.*;
 
-public class FakeServerImpl implements Server {
+public class FakeServer implements ServerInterface {
     
     private final String HOST = "localhost";
 
     private BufferedReader reader;
 
-    public Server.PlayerAction sendMyAction() {
+    public PlayerAction sendAction() {
         try {
             reader = 
                 new BufferedReader(new InputStreamReader(System.in));
@@ -28,27 +28,34 @@ public class FakeServerImpl implements Server {
         return null;
     }
 
-    public Monster sendMyLead() {return null;}
+    public Monster sendLead() {return null;}
 
-    public Attack sendMyAttack(){return null;}
+    public Attack sendAttack(){return null;}
 
-    public State sendMyState(){return null;}
+    public State sendState(){return null;}
 
-    public PlayerAction getOpponentAction(){return null;}
+    public PlayerAction getAction(){return null;}
 
-    public Monster getOpponentLead(){return null;}
+    public Monster getLead(){return null;}
 
-    public Attack getOpponentAttack(){return null;}
+    public Attack getAttack(){return null;}
 
-    public State getOpponentState(){return null;}
+    public State getState(){return null;}
 
     public Player getPlayer(String ID) {
-	return null;
+    	return new Player(ID, name);
+    }
+    
+    public Player getOpponent() {return null;}
+
+    public boolean bothFainted(Player p1, Player p2) {
+    	if (p1.allFainted() && p2.allFainted())
+    		return true;
+    	else
+    		return false;
     }
 
-    public Boolean opponentAllFainted() {return null;}
-
-    public Turn getOpponentTurn() {return null;}
-
-    public Player getOpponent() { return null; }
+    public Turn getTurn(Player player) {
+    	return null;
+    }
 }
