@@ -116,12 +116,10 @@ public class Database {
     			 								Integer.parseInt(tempMonster[9]), Integer.parseInt(tempMonster[10]),
     			 								monItems);
     			MonsterMap.put(tempMonster[0], newMonster);
-    			//newMonster.printStatus();
     		}
     	} catch (FileNotFoundException e) {
     		throw new FileNotFoundException("Input file could not be found");
     	} finally {
-    		//System.out.println(MonsterMap.size());
 			if (sm != null) {
 				sm.close();
 			} if (si != null) {

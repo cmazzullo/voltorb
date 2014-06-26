@@ -7,10 +7,62 @@
 
 package com.example.statesofmatter;
 
+import java.io.*;
+
 public class LocalGameRunner {
 	
-	private static start() {
-		
+	private String attackFile;
+	private String itemFile;
+	private String monsterFile;
+	private Database d;
+	public static FakeServer server = new FakeServer(); //until connect function in SoMStart works
+	private String playerID;
+	private Player player;
+	protected Monster[] team;
+	protected Monster myLead;
+	protected Attack[] attacks;
+	private static Turn myTurn;
+	private PlayerAction action = PlayerAction.PASS;
+	private int argument;
+	
+	public void start() throws Exception, FileNotFoundException {
+		d = new Database(attackFile, itemFile, monsterFile);
+		d.getData();
+		player = new Player(server.getPlayerName(playerID), playerID);
+	}
+	
+	public String fetchID() throws IOException, FileNotFoundException {
+		BufferedReader br = null;
+		try {
+			br = new BufferedReader(new FileReader("PlayerID"));
+			playerID = br.readLine();		
+			return playerID;
+		} catch (FileNotFoundException e) {
+			throw new FileNotFoundException("Input file could not be found");
+		} finally {
+			if (br != null)
+				br.close();
+		}
+	}
+	
+	public void setAttFile(String attackFile) {
+		this.attackFile = attackFile;
+	}
+	
+	public void setItemFile(String itemFile) {
+		this.itemFile = itemFile;
+	}
+	
+	public void setMonFile(String monsterFile) {
+		this.monsterFile = monsterFile;
+	}
+	
+	public Database getDbase() {
+		return d;
+	}
+	
+	public Player getPlayer() {
+		return player;
 	}
 	
     //All of these methods should go into a separate game logic class
@@ -21,7 +73,7 @@ public class LocalGameRunner {
     }
     
     private static void doTurns(Player player, FakeServer server) {
-    	Turn myTurn = TextUserInterface.getTurn();
+    	//Turn myTurn = TextUserInterface.getTurn();
         Turn oppTurn = server.getTurn(server.getPlayer(""));
         Monster myLead = player.getLead();
         Monster oppLead = server.getOpponent().getLead();
@@ -101,6 +153,7 @@ public class LocalGameRunner {
         //need to put playerdata in here
         //both players need to act at the same time
     	String ID1 = "";
+    	String ID2 = "";
     	String myName = "";
         FakeServer server = new FakeServer();
         Player me = server.getPlayer(ID1);
