@@ -8,42 +8,74 @@
 package com.example.statesofmatter;
 
 import java.io.*;
+import java.net.*;
+import java.util.Scanner;
 
+import android.annotation.TargetApi;
+
+@TargetApi(19)
 public class LocalGameRunner {
 	
-	public String attackFile;
-	public String itemFile;
-	public String monsterFile;
+	static Socket socket;
+	static ObjectInputStream in;
+	static ObjectOutputStream out;
+	
+	private String attackFile;
+	private String itemFile;
+	private String monsterFile;
 	private Database d;
-	public static FakeServer server = new FakeServer(); //until connect function in SoMStart works
-	private String playerID;
-	private Player player;
-	protected Monster[] team;
-	protected Monster myLead;
-	protected Attack[] attacks;
-	private static Turn myTurn;
+	private static String playerID;
+	private static String playerName;
+	private String oppID;
+	private static Player player;
+	//private Monster[] team;
+	private Monster myLead;
+	private Monster oppLead;
+	//protected Attack[] attacks;
+	//private Turn myTurn;
 	private PlayerAction action = PlayerAction.PASS;
 	private int argument;
+	private Turn oppTurn;
 	
 	public void start() throws Exception, FileNotFoundException {
-		playerID = this.fetchID();
+		fetchPlayerInfo();
 		d = new Database(attackFile, itemFile, monsterFile);
 		d.getData();
-		player = new Player(server.getPlayerName(playerID), playerID);
+		player = new Player(playerName, playerID);
 	}
 	
-	public String fetchID() throws IOException, FileNotFoundException {
-		BufferedReader br = null;
-		try {
-			br = new BufferedReader(new FileReader("PlayerID.txt"));
-			playerID = br.readLine();		
-			return playerID;
+	public void fetchPlayerInfo() throws IOException, FileNotFoundException {
+		try (Scanner sc = new Scanner(new BufferedReader(new FileReader("PlayerID.txt")));) {
+			sc.useDelimiter(":");
+			playerID = sc.next();		
+			playerName = sc.next();
 		} catch (FileNotFoundException e) {
 			throw new FileNotFoundException("Input file could not be found");
-		} finally {
-			if (br != null)
-				br.close();
 		}
+	}
+	
+	public static void connect(String host, int port) throws IOException {
+		System.out.println("Trying to connect...");
+		try {
+			socket = new Socket(host, port);
+			System.out.println("Connected");
+			out = new ObjectOutputStream(socket.getOutputStream());
+			out.flush();
+			System.out.println("vegetables");
+			in = new ObjectInputStream(socket.getInputStream());
+			in.readUTF();
+			
+			
+			System.out.println("bananas");
+			out.writeUTF(playerID);
+			System.out.println("hmm?");
+    	} catch (UnknownHostException e) {
+            System.err.println("Unknown host " + host);
+            System.exit(1);
+        } catch (IOException e) {
+            System.err.println("Couldn't get I/O for the connection to " + host);
+            System.exit(1);
+        }    
 	}
 	
 	public void setAttFile(String attackFile) {
@@ -64,6 +96,22 @@ public class LocalGameRunner {
 	
 	public Player getPlayer() {
 		return player;
+	}
+	
+	public PlayerAction getAction() {
+		return action;
+	}
+	
+	public void setAction(PlayerAction action) {
+		this.action = action;
+	}
+	
+	public int getArgument() {
+		return argument;
+	}
+	
+	public void setArgument(int argument) {
+		this.argument = argument;
 	}
 	
 	public void addToTeam(String monster, int fromIndex) throws Exception{
@@ -108,20 +156,14 @@ public class LocalGameRunner {
 		}
 	}
 	
-    //All of these methods should go into a separate game logic class
-    public static boolean isGameOver(Player player, FakeServer server) {
-	
-        return (player.allFainted() ||
-		server.getOpponent().allFainted());
-    }
-    
-    private static void doTurns(Player player, FakeServer server) {
-    	//Turn myTurn = TextUserInterface.getTurn();
-        Turn oppTurn = server.getTurn(server.getPlayer(""));
-        Monster myLead = player.getLead();
-        Monster oppLead = server.getOpponent().getLead();
+    //All of these methods should go into a separate game logic class 
+    private void doTurns(Player player) {
+    	Turn myTurn = new Turn(action, argument);
+        //Turn oppTurn = FakeServerLogic.getTurn(FakeServerLogic.getPlayer(oppID));
+        myLead = player.getLead();
+        //oppLead = FakeServerLogic.getPlayer(oppID).getLead();
         //calculate turn
-        PlayerAction myAction = myTurn.getAction();
+        PlayerAction myAction = action;
         PlayerAction oppAction = oppTurn.getAction();
         boolean myComplete = false;
         boolean oppComplete = false;
@@ -136,6 +178,7 @@ public class LocalGameRunner {
         	//send isTied boolean to server, server does tie-breaker only,
         	//sends result back to clients. First client executes turn and sends
         	//results to server, to second client, second client goes.
+        	//FakeServerLogic.isTie(player);
         }
         
         if(myAction == PlayerAction.SWITCH || oppAction == PlayerAction.SWITCH){
@@ -191,18 +234,18 @@ public class LocalGameRunner {
     private static void doPostGame() {
         
     }
-
-    public static void main(String[] args) {
-        //need to put playerdata in here
-        //both players need to act at the same time
-    	String ID1 = "";
-    	String ID2 = "";
-    	String myName = "";
-        FakeServer server = new FakeServer();
-        Player me = server.getPlayer(ID1);
-        Player opponent = server.getPlayer(ID2);
-        while (!isGameOver(me, server)) {
-            doTurns(me, server);
+    
+    public static void main(String[] args) throws IOException, Exception {    	
+    	LocalGameRunner runner = new LocalGameRunner();
+        runner.start();
+        System.out.println(playerID + ":" + playerName);
+        
+    	String host = "localhost";
+    	int port = 4444;
+    	connect(host, port);
+    	
+        while (in.read() != -1) {
+            runner.doTurns(player);
             //opponentTurn.executeTurn(opponent);
         }
         doPostGame();

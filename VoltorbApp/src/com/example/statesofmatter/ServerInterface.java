@@ -23,6 +23,4 @@ public interface ServerInterface {
     boolean bothFainted(Player p1, Player p2);
 
     Player getPlayer(String ID);
-    
-    Player getOpponent();
 }
