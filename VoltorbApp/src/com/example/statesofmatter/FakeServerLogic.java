@@ -20,20 +20,7 @@ public class FakeServerLogic{
 
     private BufferedReader reader;
 
-    public PlayerAction sendAction() {
-        try {
-            reader = 
-                new BufferedReader(new InputStreamReader(System.in));
-            System.out.println("What action would you like to take?");
-            String input = reader.readLine();
-            System.out.println(input);
-        } catch (IOException e) {
-            System.err.println("Couldn't open reader from stdin!");
-            e.printStackTrace();
-            System.exit(0);
-        }
-        return null;
-    }
+    public PlayerAction sendAction() { return null; }
 
     public Monster sendLead() {return null;}
 
@@ -72,7 +59,7 @@ public class FakeServerLogic{
     	Scanner pn = null;
     	String name = null;
     	try {
-    		pn = new Scanner(new BufferedReader(new FileReader("C:\\Users\\Jim\\Scripts\\voltorb\\VoltorbApp\\PlayerDatabase.txt")));
+    		pn = new Scanner(new BufferedReader(new FileReader("PlayerDatabase.txt")));
     		pn.useDelimiter(":|\n");
     		String id;
     		boolean found = false;

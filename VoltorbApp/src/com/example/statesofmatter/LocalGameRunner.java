@@ -16,12 +16,12 @@ import android.annotation.TargetApi;
 @TargetApi(19)
 public class LocalGameRunner implements Runnable {
 	
-	private boolean running = false;
+	private boolean isRunning = false;
 	private Thread lgrThread;
 	
-	static Socket socket;
-	static ObjectInputStream in;
-	static ObjectOutputStream out;
+	private static Socket playerSocket;
+	private ObjectInputStream input;
+	private ObjectOutputStream output;
 	
 	private String attackFile;
 	private String itemFile;
@@ -200,7 +200,7 @@ public class LocalGameRunner implements Runnable {
     }
     
     public void start() throws Exception, FileNotFoundException {
-    	running = true;
+    	isRunning = true;
     	lgrThread = new Thread(this);
     	lgrThread.start();
 		fetchPlayerInfo();
@@ -209,7 +209,7 @@ public class LocalGameRunner implements Runnable {
 		player = new Player(playerName, playerID);
 	}
 	
-	public void fetchPlayerInfo() throws IOException, FileNotFoundException {
+	private void fetchPlayerInfo() throws IOException, FileNotFoundException {
 		try (Scanner sc = new Scanner(new BufferedReader(new FileReader("PlayerID.txt")));) {
 			sc.useDelimiter(":");
 			playerID = sc.next();		
@@ -219,18 +219,13 @@ public class LocalGameRunner implements Runnable {
 		}
 	}
 	
-	public static void connect(String host, int port) throws IOException {
+	public void connect(String host, int port) throws IOException {
 		System.out.println("Trying to connect...");
 		try {
-			socket = new Socket(host, port);
+			playerSocket = new Socket(host, port);
 			System.out.println("Connected");
-			out = new ObjectOutputStream(socket.getOutputStream());
-			System.out.println("vegetables");
-			in = new ObjectInputStream(socket.getInputStream());
-			Input input = new Input(in);
-			Thread thread = new Thread(input);
-			thread.start();
-			System.out.println("bananas");
+			setupStreams(playerSocket);
+			System.out.println("Streams established");
     	} catch (UnknownHostException e) {
             System.err.println("Unknown host " + host);
             System.exit(1);
@@ -239,16 +234,15 @@ public class LocalGameRunner implements Runnable {
             System.exit(1);
         }
 	}
+	
+	private void setupStreams(Socket s) throws IOException {
+		output = new ObjectOutputStream(s.getOutputStream());
+		input = new ObjectInputStream(s.getInputStream());
+	}
     
 	public void run() {
 		while (true) {
-			try {
-				System.out.println("hmm");
-				out.writeUTF(playerID);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+
 		}
 	}
 	
@@ -259,35 +253,12 @@ public class LocalGameRunner implements Runnable {
         
     	String host = "localhost";
     	int port = 4444;
-    	connect(host, port);
+    	runner.connect(host, port);
     	
-        while (in.read() != -1) {
+        while (true) {
             //runner.doTurns(player);
             //opponentTurn.executeTurn(opponent);
         }
-        doPostGame();
+        //doPostGame();
     }
-}
-
-class Input implements Runnable {
-
-	ObjectInputStream in;
-	
-	public Input(ObjectInputStream in) {
-		this.in = in;
-	}
-	
-	@Override
-	public void run() {
-		while(true) {
-			try {
-				System.out.println(in.readUTF());
-				
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
-	
 }

@@ -8,20 +8,26 @@ import android.annotation.TargetApi;
 @TargetApi(19)
 public class FakeServerThread extends Thread {
 	
-	private Socket socket = null;
+	private static Socket playerSocket;
 	
-	public FakeServerThread(Socket socket) {
+	private ObjectOutputStream output;
+	private ObjectInputStream input;
+	
+	public FakeServerThread(Socket s) {
 		super("FakeServerThread");
-		this.socket = socket;
+		playerSocket = s;
+	}
+	
+	private void setupStreams(Socket s) throws IOException {
+		output = new ObjectOutputStream(s.getOutputStream());
+		input = new ObjectInputStream(s.getInputStream());
 	}
 	
 	public void run() {
-		try (OutputStream out = socket.getOutputStream();
-			 InputStream in = socket.getInputStream();) {
-			
+		try {
+			setupStreams(playerSocket);
 			FakeServerLogic fsl = new FakeServerLogic();
-			
-			while (!fsl.isGameOver()) {
+			while (true) {
 				
 			}
 		} catch (IOException e) {
