@@ -14,7 +14,10 @@ import java.util.Scanner;
 import android.annotation.TargetApi;
 
 @TargetApi(19)
-public class LocalGameRunner {
+public class LocalGameRunner implements Runnable {
+	
+	private boolean running = false;
+	private Thread lgrThread;
 	
 	static Socket socket;
 	static ObjectInputStream in;
@@ -37,46 +40,7 @@ public class LocalGameRunner {
 	private int argument;
 	private Turn oppTurn;
 	
-	public void start() throws Exception, FileNotFoundException {
-		fetchPlayerInfo();
-		d = new Database(attackFile, itemFile, monsterFile);
-		d.getData();
-		player = new Player(playerName, playerID);
-	}
 	
-	public void fetchPlayerInfo() throws IOException, FileNotFoundException {
-		try (Scanner sc = new Scanner(new BufferedReader(new FileReader("PlayerID.txt")));) {
-			sc.useDelimiter(":");
-			playerID = sc.next();		
-			playerName = sc.next();
-		} catch (FileNotFoundException e) {
-			throw new FileNotFoundException("Input file could not be found");
-		}
-	}
-	
-	public static void connect(String host, int port) throws IOException {
-		System.out.println("Trying to connect...");
-		try {
-			socket = new Socket(host, port);
-			System.out.println("Connected");
-			out = new ObjectOutputStream(socket.getOutputStream());
-			out.flush();
-			System.out.println("vegetables");
-			in = new ObjectInputStream(socket.getInputStream());
-			in.readUTF();
-			
-			
-			System.out.println("bananas");
-			out.writeUTF(playerID);
-			System.out.println("hmm?");
-    	} catch (UnknownHostException e) {
-            System.err.println("Unknown host " + host);
-            System.exit(1);
-        } catch (IOException e) {
-            System.err.println("Couldn't get I/O for the connection to " + host);
-            System.exit(1);
-        }    
-	}
 	
 	public void setAttFile(String attackFile) {
 		this.attackFile = attackFile;
@@ -235,7 +199,60 @@ public class LocalGameRunner {
         
     }
     
-    public static void main(String[] args) throws IOException, Exception {    	
+    public void start() throws Exception, FileNotFoundException {
+    	running = true;
+    	lgrThread = new Thread(this);
+    	lgrThread.start();
+		fetchPlayerInfo();
+		d = new Database(attackFile, itemFile, monsterFile);
+		d.getData();
+		player = new Player(playerName, playerID);
+	}
+	
+	public void fetchPlayerInfo() throws IOException, FileNotFoundException {
+		try (Scanner sc = new Scanner(new BufferedReader(new FileReader("PlayerID.txt")));) {
+			sc.useDelimiter(":");
+			playerID = sc.next();		
+			playerName = sc.next();
+		} catch (FileNotFoundException e) {
+			throw new FileNotFoundException("Input file could not be found");
+		}
+	}
+	
+	public static void connect(String host, int port) throws IOException {
+		System.out.println("Trying to connect...");
+		try {
+			socket = new Socket(host, port);
+			System.out.println("Connected");
+			out = new ObjectOutputStream(socket.getOutputStream());
+			System.out.println("vegetables");
+			in = new ObjectInputStream(socket.getInputStream());
+			Input input = new Input(in);
+			Thread thread = new Thread(input);
+			thread.start();
+			System.out.println("bananas");
+    	} catch (UnknownHostException e) {
+            System.err.println("Unknown host " + host);
+            System.exit(1);
+        } catch (IOException e) {
+            System.err.println("Couldn't get I/O for the connection to " + host);
+            System.exit(1);
+        }
+	}
+    
+	public void run() {
+		while (true) {
+			try {
+				System.out.println("hmm");
+				out.writeUTF(playerID);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+    public static void main(String[] args) throws IOException, Exception {
     	LocalGameRunner runner = new LocalGameRunner();
         runner.start();
         System.out.println(playerID + ":" + playerName);
@@ -245,9 +262,32 @@ public class LocalGameRunner {
     	connect(host, port);
     	
         while (in.read() != -1) {
-            runner.doTurns(player);
+            //runner.doTurns(player);
             //opponentTurn.executeTurn(opponent);
         }
         doPostGame();
     }
+}
+
+class Input implements Runnable {
+
+	ObjectInputStream in;
+	
+	public Input(ObjectInputStream in) {
+		this.in = in;
+	}
+	
+	@Override
+	public void run() {
+		while(true) {
+			try {
+				System.out.println(in.readUTF());
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
 }

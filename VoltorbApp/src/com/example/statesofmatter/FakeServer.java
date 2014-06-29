@@ -8,44 +8,45 @@ import java.net.*;
 import android.annotation.TargetApi;
 
 @TargetApi(19)
-public class FakeServer {
+public class FakeServer extends Thread{
 	
 	static ServerSocket serverSocket;
-	static Socket socket;
+	private static final int PORT = 4444;
+	private boolean isRunning = false;
+	static Socket playerSocket;
 	static ObjectInputStream in;
 	static ObjectOutputStream out;
 	static User[] users = new User[2];
 	
-	public static void main(String[] args) throws IOException {
-
-		if (args.length != 1) {
-			System.err.println("Usage: java FakeServer <port number>");
-			System.exit(1);
+	private FakeServer() {
+		try {
+			serverSocket = new ServerSocket(PORT);
+			isRunning = true;
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		
-		int port = Integer.parseInt(args[0]);	
-
+	}
+	
+	public static void main(String[] args) throws IOException {
+		new FakeServer().start();
 		try {
 			FakeServerLogic fsl = new FakeServerLogic();
-			serverSocket = new ServerSocket(port);
+			
 			while (true) {
-				socket = serverSocket.accept();
+				playerSocket = serverSocket.accept();
 				for (int i = 0; i < 2; i++) {
 					if (users[i] == null) {
-						in = new ObjectInputStream(socket.getInputStream());
-						out = new ObjectOutputStream(socket.getOutputStream());
-						out.flush();
+						out = new ObjectOutputStream(playerSocket.getOutputStream());
+						in = new ObjectInputStream(playerSocket.getInputStream());
 						users[i] = new User(in, out, users);
 						Thread userThread = new Thread(users[i]);
 						userThread.start();
 						System.out.println("Connection made");
 						break;
-						/*String inputLine;
+						/*
 						try {
-							while ((inputLine = in.readUTF()) != null) {
-								System.out.println(in.readUTF());
-								System.out.println("blah");
-							}
+							
 						} catch (IOException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
@@ -54,11 +55,17 @@ public class FakeServer {
 				}
 			}
 		} catch (IOException e) {
-			System.err.println("Could not use port " + port);
+			System.err.println("Could not use port " + PORT);
             System.exit(-1);
 		} finally {
 			if (serverSocket != null)
 				serverSocket.close();
+		}
+	}
+	
+	public void run() {
+		while (isRunning) {
+			
 		}
 	}
 }	
@@ -75,16 +82,34 @@ class User implements Runnable {
 	}
 	
 	public void run() {
-
-		/*while (true) {
+		while (true) {
 			try {
+				//out.writeUTF("testing");
+				String message = in.readUTF();
+				for (int i = 0; i<2; i++) {
+					if (users[i] != null) {
+						users[i].out.writeUTF(message);
+					}
+				}
+				/*String inputLine = in.readUTF();
+				while ((inputLine) != null) {
+					System.out.println(inputLine);
+					System.out.println("blah");
+				}*/
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				out = null;
+				in = null;
+				e.printStackTrace();
+			}
+			/*try {
 				String message = in.readUTF();
 				for (int i = 0; i < users.length; i++) {
 					out.writeUTF(message);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
-			}
-		}*/
+			}*/
+		}
 	}
 }
