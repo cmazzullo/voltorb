@@ -8,19 +8,19 @@ import java.net.*;
 import android.annotation.TargetApi;
 
 @TargetApi(19)
-public class FakeServer extends Thread{
+public class FakeServer extends Thread implements Runnable {
 	
-	static ServerSocket serverSocket;
+	private static ServerSocket serverSocket;
 	private static final int PORT = 4444;
-	static Socket playerSocket;
+	private static Socket playerSocket;
 	
-	private boolean isRunning = false;
+	private static boolean isRunning = false;
 	
 	private ObjectInputStream input;
 	private ObjectOutputStream output;
 	static User[] users = new User[2];
 	
-	private FakeServer() throws IOException, ClassNotFoundException {
+	private FakeServer() throws IOException {
 		try {
 			System.out.println("Attempting to start...");
 			serverSocket = new ServerSocket(PORT);
@@ -29,21 +29,23 @@ public class FakeServer extends Thread{
 			
 			while (isRunning) {
 				playerSocket = serverSocket.accept();
-				for (int i = 0; i < 2; i++) {
+				for (int i = 0; i< users.length; i++) {
 					if (users[i] == null) {
 						setupStreams(playerSocket);
-						users[i] = new User(input, output, users);
-						Thread userThread = new Thread(users[i]);
-						userThread.start();
+						users[i] = new User(output, input, users);
+						users[i].start();
 						System.out.println("Connection made");
 						break;
 					}
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.err.println("Could not use port " + PORT);
+            System.exit(-1);
+		} finally {
+			if (serverSocket != null)
+				serverSocket.close();
 		}
-		
 	}
 	
 	private void setupStreams(Socket s) throws IOException {
@@ -52,26 +54,6 @@ public class FakeServer extends Thread{
 	}
 	
 	public static void main(String[] args) throws IOException {
-		try {
-			new FakeServer();
-			FakeServerLogic fsl = new FakeServerLogic();
-		} catch (IOException e) {
-			System.err.println("Could not use port " + PORT);
-            System.exit(-1);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			if (playerSocket != null)
-				playerSocket.close();
-			if (serverSocket != null)
-				serverSocket.close();
-		}
-	}
-	
-	public void run() {
-		while (isRunning) {
-			
-		}
+		new FakeServer();
 	}
 }

@@ -10,6 +10,7 @@ package com.example.statesofmatter;
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
+import java.util.concurrent.TimeoutException;
 
 import android.annotation.TargetApi;
 
@@ -20,8 +21,8 @@ public class LocalGameRunner implements Runnable {
 	private Thread lgrThread;
 	
 	private static Socket playerSocket;
-	private ObjectInputStream input;
-	private ObjectOutputStream output;
+	private static ObjectInputStream input;
+	private static ObjectOutputStream output;
 	
 	private String attackFile;
 	private String itemFile;
@@ -219,7 +220,7 @@ public class LocalGameRunner implements Runnable {
 		}
 	}
 	
-	public void connect(String host, int port) throws IOException {
+	public void connect(String host, int port) {
 		System.out.println("Trying to connect...");
 		try {
 			playerSocket = new Socket(host, port);
@@ -254,8 +255,16 @@ public class LocalGameRunner implements Runnable {
     	String host = "localhost";
     	int port = 4444;
     	runner.connect(host, port);
-    	
+    	output.writeObject("tied");
+
         while (true) {
+        	Object o;
+        	if ((o = input.readObject()) != null) {
+        		if (((Boolean)o).equals(true))
+        			System.out.println(o);
+        		else
+        			System.out.println("Not " + o);
+        	}
             //runner.doTurns(player);
             //opponentTurn.executeTurn(opponent);
         }
