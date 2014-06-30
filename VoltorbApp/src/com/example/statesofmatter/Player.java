@@ -1,6 +1,9 @@
 package com.example.statesofmatter;
 
-public class Player implements PlayerInterface {
+import java.io.Serializable;
+import java.util.Arrays;
+
+public class Player implements PlayerInterface, Serializable {
 
     private String name;
     private String ID;//get from Android phone
@@ -75,5 +78,13 @@ public class Player implements PlayerInterface {
     	if(size == 0) throw new Exception("There are no monsters on your team.");
     	if(m == null) throw new Exception("Paramater Monster is null.");
     	team[position] = null;
+    }
+    
+    @Override
+    public String toString() {
+    	return String.format("Player: %s%n" +
+    				  		 "ID: %s%n" +
+    				  		 "Team: %s%n",
+    				  		 name, ID, Arrays.toString(team));
     }
 }

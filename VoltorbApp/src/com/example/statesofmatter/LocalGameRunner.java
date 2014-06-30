@@ -10,28 +10,27 @@ package com.example.statesofmatter;
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
-import java.util.concurrent.TimeoutException;
 
 import android.annotation.TargetApi;
 
 @TargetApi(19)
 public class LocalGameRunner implements Runnable {
 	
-	private boolean isRunning = false;
+	//private boolean isRunning = false;
 	private Thread lgrThread;
 	
-	private static Socket playerSocket;
-	private static ObjectInputStream input;
-	private static ObjectOutputStream output;
+	private Socket playerSocket;
+	public ObjectInputStream input;
+	public ObjectOutputStream output;
 	
 	private String attackFile;
 	private String itemFile;
 	private String monsterFile;
 	private Database d;
-	private static String playerID;
-	private static String playerName;
+	private String playerID;
+	private String playerName;
 	private String oppID;
-	private static Player player;
+	private Player player;
 	//private Monster[] team;
 	private Monster myLead;
 	private Monster oppLead;
@@ -122,7 +121,7 @@ public class LocalGameRunner implements Runnable {
 	}
 	
     //All of these methods should go into a separate game logic class 
-    private void doTurns(Player player) {
+    /*private void doTurns(Player player) {
     	Turn myTurn = new Turn(action, argument);
         //Turn oppTurn = FakeServerLogic.getTurn(FakeServerLogic.getPlayer(oppID));
         myLead = player.getLead();
@@ -194,20 +193,19 @@ public class LocalGameRunner implements Runnable {
         	else if(myAction == PlayerAction.PASS){
         	}
         }
-    }
+    }*/
 
     private static void doPostGame() {
         
     }
     
     public void start() throws Exception, FileNotFoundException {
-    	isRunning = true;
-    	lgrThread = new Thread(this);
-    	lgrThread.start();
-		fetchPlayerInfo();
+    	fetchPlayerInfo();
 		d = new Database(attackFile, itemFile, monsterFile);
 		d.getData();
 		player = new Player(playerName, playerID);
+    	lgrThread = new Thread(this);
+    	lgrThread.start();
 	}
 	
 	private void fetchPlayerInfo() throws IOException, FileNotFoundException {
@@ -242,12 +240,32 @@ public class LocalGameRunner implements Runnable {
 	}
     
 	public void run() {
+		this.connect("localhost", 4444);
+		try {
+			System.out.println(player.toString());
+			output.writeObject(player);
+		} catch (IOException e2) {
+			e2.printStackTrace();
+		}
+		
 		while (true) {
-
+			Object o;
+        	try {
+				if ((o = input.readObject()) != null) {
+					if (((Boolean)o).equals(true))
+						System.out.println(o);
+					else
+						System.out.println("Not " + o);
+				}
+			} catch (ClassNotFoundException
+					| IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 	
-    public static void main(String[] args) throws IOException, Exception {
+    /*public static void main(String[] args) throws IOException, Exception {
     	LocalGameRunner runner = new LocalGameRunner();
         runner.start();
         System.out.println(playerID + ":" + playerName);
@@ -257,6 +275,7 @@ public class LocalGameRunner implements Runnable {
     	runner.connect(host, port);
     	output.writeObject("tied");
 
+    	boolean connected = false;
         while (true) {
         	Object o;
         	if ((o = input.readObject()) != null) {
@@ -265,9 +284,9 @@ public class LocalGameRunner implements Runnable {
         		else
         			System.out.println("Not " + o);
         	}
-            //runner.doTurns(player);
-            //opponentTurn.executeTurn(opponent);
+            runner.doTurns(player);
+            opponentTurn.executeTurn(opponent);
         }
-        //doPostGame();
-    }
+        doPostGame();
+    }*/
 }

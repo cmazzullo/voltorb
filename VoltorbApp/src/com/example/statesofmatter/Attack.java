@@ -1,7 +1,9 @@
 package com.example.statesofmatter;
 
+import java.io.Serializable;
 
-public class Attack implements AttackInterface {
+
+public class Attack implements AttackInterface, Serializable {
 
     private String name;
     private Element element;

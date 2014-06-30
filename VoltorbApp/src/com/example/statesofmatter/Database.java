@@ -56,9 +56,9 @@ public class Database {
     	Scanner sm = null;
     	
     	try {
-    		sa = new Scanner(new BufferedReader(new FileReader("AttackList.txt")));
-    		si = new Scanner(new BufferedReader(new FileReader("ItemList.txt")));
-    		sm = new Scanner(new BufferedReader(new FileReader("MonsterList.txt")));
+    		sa = new Scanner(new BufferedReader(new FileReader(attackFile)));
+    		si = new Scanner(new BufferedReader(new FileReader(itemFile)));
+    		sm = new Scanner(new BufferedReader(new FileReader(monsterFile)));
     		AttackMap = new HashMap<String, Attack>();
     		ItemMap = new HashMap<String, Item>();
     		MonsterMap = new HashMap<String, Monster>();

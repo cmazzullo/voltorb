@@ -5,9 +5,19 @@ import java.io.*;
 
 public class FakeServerProtocol {
 	
-	private static final int WAITING = 0;
+	private static int numPlayers = 0;
 	
-	private int state = WAITING;
+	
+	
+	public boolean readyBattle() throws Exception {
+		if (numPlayers < 2) {
+			numPlayers++;
+			return false;
+		} else if(numPlayers == 2)
+			return true;
+		else
+			throw new Exception("Too many players.");
+	}
 	
 	public boolean processTie(String s) {
 		if (s.equals("tied"))

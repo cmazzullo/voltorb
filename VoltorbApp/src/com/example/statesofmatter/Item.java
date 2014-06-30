@@ -4,7 +4,9 @@
  */
 package com.example.statesofmatter;
 
-public class Item implements ItemInterface {
+import java.io.Serializable;
+
+public class Item implements ItemInterface, Serializable {
 	
 	private String itemName;
 	private ItemType itemType;

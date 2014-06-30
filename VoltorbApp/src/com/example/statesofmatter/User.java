@@ -12,6 +12,7 @@ public class User extends Thread {
 	private ObjectOutputStream output;
 	private ObjectInputStream input;
 	static User[] users = new User[2];
+	private Player player;
 	private boolean gameOver = false;
 	
 	public User(ObjectOutputStream out, ObjectInputStream in, User[] users) {
@@ -27,19 +28,38 @@ public class User extends Thread {
 	
 	public void run() {
 		try {
-			//setupStreams(playerSocket);
 			FakeServerProtocol fsp = new FakeServerProtocol();
+			int count = 0;
 			while (!gameOver) {
 				Object o;
 				if ((o = input.readObject()) != null) {
-					if (((String)o).equals("tied"))
-						//output.flush();
-						output.writeObject((Object)fsp.processTie((String)o));
+					if (((Player)o) instanceof Player) {
+						System.out.println("made it");
+						player = (Player)o;
+						System.out.println(((Player)o).toString());
+					} else
+					
+					if (((String)o).equals("tied")) {
+						for (User u : users) {
+							if (u != null) {
+							System.out.println(fsp.processTie((String)o));
+							u.output.writeObject((Object)fsp.processTie((String)o));
+							}
+						}
+					}
+					
+					for (User u : users) { if (u != null) { count++; } }
+					System.out.println(count);
+					if (count == 2)
+						System.out.println("Battle started!");						
 				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

@@ -6,7 +6,9 @@
  */
 package com.example.statesofmatter;
 
-public class Turn implements TurnInterface {
+import java.io.Serializable;
+
+public class Turn implements TurnInterface, Serializable {
 
     private PlayerAction action;
     private int argument;

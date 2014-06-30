@@ -4,9 +4,10 @@
  */
 package com.example.statesofmatter;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
-public class Monster implements MonsterInterface {
+public class Monster implements MonsterInterface, Serializable {
 
     // Stats that change
     private int currentHP;
