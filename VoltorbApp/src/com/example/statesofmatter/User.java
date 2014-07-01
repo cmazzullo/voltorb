@@ -13,6 +13,8 @@ public class User extends Thread {
 	private ObjectInputStream input;
 	static User[] users = new User[2];
 	private Player player;
+	private boolean playerReady = false;
+	private boolean battleStarted = false;
 	private boolean gameOver = false;
 	
 	public User(ObjectOutputStream out, ObjectInputStream in, User[] users) {
@@ -28,40 +30,56 @@ public class User extends Thread {
 	
 	public void run() {
 		try {
-			FakeServerProtocol fsp = new FakeServerProtocol();
-			int count = 0;
-			while (!gameOver) {
+			FakeServer.fsp.incConnection();
+			while (!playerReady) {
 				Object o;
-				if ((o = input.readObject()) != null) {
-					if (((Player)o) instanceof Player) {
-						System.out.println("made it");
-						player = (Player)o;
-						System.out.println(((Player)o).toString());
-					} else
-					
-					if (((String)o).equals("tied")) {
-						for (User u : users) {
-							if (u != null) {
-							System.out.println(fsp.processTie((String)o));
-							u.output.writeObject((Object)fsp.processTie((String)o));
-							}
-						}
-					}
-					
-					for (User u : users) { if (u != null) { count++; } }
-					System.out.println(count);
-					if (count == 2)
-						System.out.println("Battle started!");						
+				FakeServer.fsp.manageStartup();
+				Thread.sleep(1000);
+				if ((o = input.readObject()) != null && (Boolean)o == true) {
+					playerReady = true;
+					FakeServer.fsp.incReady();
+					System.out.println("I'm ready");	
 				}
 			}
+
+			while (!battleStarted) {
+				Thread.sleep(1000);
+				boolean starting = FakeServer.fsp.manageStartup();
+				if (starting == true) {
+					output.writeObject((Boolean)starting);
+					battleStarted = true;
+					//FakeServer.fsp.incBattling();
+				}
+			}
+			
+			System.out.println("Print me when everyone's ready to battle!");
+		
+			while (true) {
+			
+			}
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (Exception e) {
+		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+			try {
+				FakeServer.fsp.decReady();
+				FakeServer.fsp.decConnection();
+				if (output != null)
+					output.close();
+				if (input != null)
+					input.close();
+				if (playerSocket != null)
+					playerSocket.close();
+				System.out.println("Player disconnected");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	

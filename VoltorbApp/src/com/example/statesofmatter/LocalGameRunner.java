@@ -14,14 +14,15 @@ import java.util.Scanner;
 import android.annotation.TargetApi;
 
 @TargetApi(19)
-public class LocalGameRunner implements Runnable {
+public class LocalGameRunner extends Thread {
 	
-	//private boolean isRunning = false;
-	private Thread lgrThread;
+	public Thread lgrThread;
+	private boolean isReady = false;
+	private boolean battleStarted = false;
 	
 	private Socket playerSocket;
-	public ObjectInputStream input;
-	public ObjectOutputStream output;
+	public static ObjectInputStream input;
+	public static ObjectOutputStream output;
 	
 	private String attackFile;
 	private String itemFile;
@@ -29,17 +30,11 @@ public class LocalGameRunner implements Runnable {
 	private Database d;
 	private String playerID;
 	private String playerName;
-	private String oppID;
 	private Player player;
-	//private Monster[] team;
 	private Monster myLead;
 	private Monster oppLead;
-	//protected Attack[] attacks;
-	//private Turn myTurn;
 	private PlayerAction action = PlayerAction.PASS;
 	private int argument;
-	private Turn oppTurn;
-	
 	
 	
 	public void setAttFile(String attackFile) {
@@ -76,6 +71,18 @@ public class LocalGameRunner implements Runnable {
 	
 	public void setArgument(int argument) {
 		this.argument = argument;
+	}
+	
+	public boolean getIsReady() {
+		return isReady;
+	}
+	
+	public void setIsReady(boolean ready) {
+		this.isReady = ready;
+	}
+	
+	public boolean getBattleStarted() {
+		return battleStarted;
 	}
 	
 	public void addToTeam(String monster, int fromIndex) throws Exception{
@@ -199,13 +206,16 @@ public class LocalGameRunner implements Runnable {
         
     }
     
-    public void start() throws Exception, FileNotFoundException {
-    	fetchPlayerInfo();
-		d = new Database(attackFile, itemFile, monsterFile);
-		d.getData();
-		player = new Player(playerName, playerID);
-    	lgrThread = new Thread(this);
-    	lgrThread.start();
+    public void startClient() {
+    	try {
+			fetchPlayerInfo();
+			d = new Database(attackFile, itemFile, monsterFile);
+			d.getData();
+			player = new Player(playerName, playerID);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		start();
 	}
 	
 	private void fetchPlayerInfo() throws IOException, FileNotFoundException {
@@ -240,28 +250,40 @@ public class LocalGameRunner implements Runnable {
 	}
     
 	public void run() {
-		this.connect("localhost", 4444);
+		connect("localhost", 4444);
 		try {
-			System.out.println(player.toString());
-			output.writeObject(player);
-		} catch (IOException e2) {
-			e2.printStackTrace();
-		}
-		
-		while (true) {
-			Object o;
-        	try {
-				if ((o = input.readObject()) != null) {
-					if (((Boolean)o).equals(true))
-						System.out.println(o);
-					else
-						System.out.println("Not " + o);
-				}
-			} catch (ClassNotFoundException
-					| IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			while (!isReady) {
+				output.writeObject(isReady);
+				Thread.sleep(1000);
+				System.out.println("waiting");
 			}
+			System.out.println("moving on");
+			output.writeObject(isReady);
+			
+			while (!battleStarted) {
+				Object o;
+				Thread.sleep(1000);
+				if ((o = input.readObject()) != null && (Boolean)o == true) {
+					battleStarted = true;
+				}
+			}
+			System.out.println("Battle started!");
+		
+			while (true) {
+			
+			}
+			
+		} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			
 		}
 	}
 	

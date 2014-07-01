@@ -14,6 +14,8 @@ public class FakeServer extends Thread implements Runnable {
 	private static final int PORT = 4444;
 	private static Socket playerSocket;
 	
+	public static final FakeServerProtocol fsp = new FakeServerProtocol();
+	
 	private static boolean isRunning = false;
 	
 	private ObjectInputStream input;
