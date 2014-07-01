@@ -20,12 +20,7 @@ public class User extends Thread {
 	public User(ObjectOutputStream out, ObjectInputStream in, User[] users) {
 		this.output = out;
 		this.input = in;
-		this.users = users;
-	}
-	
-	private void setupStreams(Socket s) throws IOException {
-		output = new ObjectOutputStream(s.getOutputStream());
-		input = new ObjectInputStream(s.getInputStream());
+		User.users = users;
 	}
 	
 	public void run() {
@@ -48,7 +43,6 @@ public class User extends Thread {
 				if (starting == true) {
 					output.writeObject((Boolean)starting);
 					battleStarted = true;
-					//FakeServer.fsp.incBattling();
 				}
 			}
 			
@@ -82,21 +76,4 @@ public class User extends Thread {
 			}
 		}
 	}
-	
-/*	static ObjectInputStream in;
-	static ObjectOutputStream out;
-	static User[] users = new User[2];
-	static int pid;
-	
-	public User(ObjectInputStream in, ObjectOutputStream out, User[] users) {
-		this.in = in;
-		this.out = out;
-		this.users = users;
-	}
-	
-	public void run() {
-		while (true) {
-			
-		}
-	}*/
 }

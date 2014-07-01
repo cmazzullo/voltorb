@@ -7,18 +7,13 @@ package com.example.statesofmatter;
 
 import java.io.*;
 import java.util.Scanner;
-import java.net.*;
-
 import android.annotation.TargetApi;
 
 public class FakeServerLogic{
     
-    private final String HOST = "localhost";
     static String p1ID, p2ID = null;
     static Player p1, p2 = null;
     static int connected = 0;
-
-    private BufferedReader reader;
 
     public PlayerAction sendAction() { return null; }
 
@@ -92,8 +87,8 @@ public class FakeServerLogic{
     	return true;
     }
     
-    public boolean isGameOver() throws IOException {
+    /*public boolean isGameOver() throws IOException {
         return (this.getPlayer(p1ID).allFainted() ||
 		this.getPlayer(p2ID).allFainted());
-    }
+    }*/
 }

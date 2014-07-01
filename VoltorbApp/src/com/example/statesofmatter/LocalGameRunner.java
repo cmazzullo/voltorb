@@ -202,9 +202,9 @@ public class LocalGameRunner extends Thread {
         }
     }*/
 
-    private static void doPostGame() {
+    /*private static void doPostGame() {
         
-    }
+    }*/
     
     public void startClient() {
     	try {

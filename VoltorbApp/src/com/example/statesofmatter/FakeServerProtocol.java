@@ -1,8 +1,5 @@
 package com.example.statesofmatter;
 
-import java.net.*;
-import java.io.*;
-
 public class FakeServerProtocol {
 	
 	private final int NOT_FULL = 0;
