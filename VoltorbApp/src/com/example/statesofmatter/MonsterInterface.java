@@ -31,7 +31,7 @@ public interface MonsterInterface {
 
     public Element[] getElements();
 
-    public int getmaxHP();
+    public int getMaxHP();
 
     public int getSpeed();
 

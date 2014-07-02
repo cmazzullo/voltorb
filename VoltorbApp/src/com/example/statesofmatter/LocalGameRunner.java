@@ -57,6 +57,10 @@ public class LocalGameRunner extends Thread {
 		return player;
 	}
 	
+	public Monster getOppLead() {
+		return oppLead;
+	}
+	
 	public PlayerAction getAction() {
 		return action;
 	}
@@ -259,11 +263,12 @@ public class LocalGameRunner extends Thread {
 			}
 			System.out.println("moving on");
 			output.writeObject(isReady);
-			
+			output.writeObject(player);
 			while (!battleStarted) {
 				Object o;
 				Thread.sleep(1000);
 				if ((o = input.readObject()) != null && (Boolean)o == true) {
+					oppLead = (Monster)input.readObject();
 					battleStarted = true;
 				}
 			}
@@ -274,8 +279,8 @@ public class LocalGameRunner extends Thread {
 			}
 			
 		} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -105,7 +105,7 @@ public class Monster implements MonsterInterface, Serializable {
         return elements;
     }
 
-    public int getmaxHP() {
+    public int getMaxHP() {
         return maxHP;
     }
 

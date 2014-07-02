@@ -57,14 +57,6 @@ public class FakeServerProtocol {
 		return false;
 	}
 	
-	
-	public boolean startBattle() {
-		if (FakeServer.users[0] == null || FakeServer.users[1] == null)
-			return false;
-		else
-			return true;
-	}
-	
 	public boolean processTie(String s) {
 		if (s.equals("tied"))
 			return true;

@@ -5,25 +5,31 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-public class User extends Thread {
+public class UserThread extends Thread {
 	
 	private static Socket playerSocket;
 	
 	private ObjectOutputStream output;
 	private ObjectInputStream input;
-	static User[] users = new User[2];
+	private int playerNum;
 	private Player player;
+	private Monster oppLead;
 	private boolean playerReady = false;
 	private boolean battleStarted = false;
 	private boolean gameOver = false;
 	
-	public User(ObjectOutputStream out, ObjectInputStream in, User[] users) {
+	public UserThread(ObjectOutputStream out, ObjectInputStream in, int playerNum) {
 		this.output = out;
 		this.input = in;
-		User.users = users;
+		this.playerNum = playerNum;
+	}
+	
+	public Player getPlayer() {
+		return player;
 	}
 	
 	public void run() {
+		System.out.println(playerNum);
 		try {
 			FakeServer.fsp.incConnection();
 			while (!playerReady) {
@@ -31,24 +37,36 @@ public class User extends Thread {
 				FakeServer.fsp.manageStartup();
 				Thread.sleep(1000);
 				if ((o = input.readObject()) != null && (Boolean)o == true) {
+					player = (Player)input.readObject();
 					playerReady = true;
 					FakeServer.fsp.incReady();
 					System.out.println("I'm ready");	
 				}
 			}
-
+			while (oppLead == null) {
+				if (playerNum == 0) {
+					if (FakeServer.users[1] != null &&
+						FakeServer.users[1].getPlayer() != null)
+						oppLead = FakeServer.users[1].getPlayer().getLead();
+				} else {
+					if (FakeServer.users[0] != null &&
+						FakeServer.users[0].getPlayer() != null)
+						oppLead = FakeServer.users[0].getPlayer().getLead();
+				}
+			}
 			while (!battleStarted) {
 				Thread.sleep(1000);
 				boolean starting = FakeServer.fsp.manageStartup();
 				if (starting == true) {
 					output.writeObject((Boolean)starting);
+					output.writeObject((Monster)oppLead);
 					battleStarted = true;
 				}
 			}
 			
 			System.out.println("Print me when everyone's ready to battle!");
 		
-			while (true) {
+			while (!gameOver) {
 			
 			}
 		} catch (IOException e) {

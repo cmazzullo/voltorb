@@ -20,7 +20,7 @@ public class FakeServer extends Thread implements Runnable {
 	
 	private ObjectInputStream input;
 	private ObjectOutputStream output;
-	static User[] users = new User[2];
+	static UserThread[] users = new UserThread[2]; //TODO: Make array list of user arrays
 	
 	private FakeServer() throws IOException {
 		try {
@@ -34,7 +34,7 @@ public class FakeServer extends Thread implements Runnable {
 				for (int i = 0; i< users.length; i++) {
 					if (users[i] == null) {
 						setupStreams(playerSocket);
-						users[i] = new User(output, input, users);
+						users[i] = new UserThread(output, input, i);
 						users[i].start();
 						System.out.println("Connection made");
 						break;
@@ -43,13 +43,13 @@ public class FakeServer extends Thread implements Runnable {
 			}
 		} catch (IOException e) {
 			System.err.println("Could not use port " + PORT);
-            System.exit(-1);
+            System.exit(-1); //-1 convention for abnormal exit
 		} finally {
 			if (serverSocket != null)
 				serverSocket.close();
 		}
 	}
-	
+	//TODO: figure out why we need method (minor)
 	private void setupStreams(Socket s) throws IOException {
 		output = new ObjectOutputStream(s.getOutputStream());
 		input = new ObjectInputStream(s.getInputStream());
