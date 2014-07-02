@@ -18,7 +18,8 @@ public class UserThread extends Thread {
 	private boolean battleStarted = false;
 	private boolean gameOver = false;
 	
-	public UserThread(ObjectOutputStream out, ObjectInputStream in, int playerNum) {
+	public UserThread(ObjectOutputStream out, ObjectInputStream in, 
+					  int playerNum) {
 		this.output = out;
 		this.input = in;
 		this.playerNum = playerNum;
@@ -29,13 +30,11 @@ public class UserThread extends Thread {
 	}
 	
 	public void run() {
-		System.out.println(playerNum);
 		try {
 			FakeServer.fsp.incConnection();
+			FakeServer.fsp.manageStartup();
 			while (!playerReady) {
 				Object o;
-				FakeServer.fsp.manageStartup();
-				Thread.sleep(1000);
 				if ((o = input.readObject()) != null && (Boolean)o == true) {
 					player = (Player)input.readObject();
 					playerReady = true;
@@ -43,21 +42,20 @@ public class UserThread extends Thread {
 					System.out.println("I'm ready");	
 				}
 			}
-			while (oppLead == null) {
-				if (playerNum == 0) {
-					if (FakeServer.users[1] != null &&
-						FakeServer.users[1].getPlayer() != null)
-						oppLead = FakeServer.users[1].getPlayer().getLead();
-				} else {
-					if (FakeServer.users[0] != null &&
-						FakeServer.users[0].getPlayer() != null)
-						oppLead = FakeServer.users[0].getPlayer().getLead();
-				}
-			}
+
 			while (!battleStarted) {
 				Thread.sleep(1000);
 				boolean starting = FakeServer.fsp.manageStartup();
 				if (starting == true) {
+					if (playerNum == 0) {
+						if (FakeServer.users[1] != null &&
+							FakeServer.users[1].getPlayer() != null)
+							oppLead = FakeServer.users[1].getPlayer().getLead();
+					} else {
+						if (FakeServer.users[0] != null &&
+							FakeServer.users[0].getPlayer() != null)
+							oppLead = FakeServer.users[0].getPlayer().getLead();
+					}
 					output.writeObject((Boolean)starting);
 					output.writeObject((Monster)oppLead);
 					battleStarted = true;
@@ -80,12 +78,15 @@ public class UserThread extends Thread {
 			e.printStackTrace();
 		} finally {
 			try {
-				FakeServer.fsp.decReady();
+				if (playerReady)
+					FakeServer.fsp.decReady();
 				FakeServer.fsp.decConnection();
+				FakeServer.fsp.manageStartup();
 				if (output != null)
 					output.close();
 				if (input != null)
 					input.close();
+				FakeServer.users[playerNum] = null;
 				if (playerSocket != null)
 					playerSocket.close();
 				System.out.println("Player disconnected");

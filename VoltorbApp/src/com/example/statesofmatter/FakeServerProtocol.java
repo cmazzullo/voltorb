@@ -30,13 +30,11 @@ public class FakeServerProtocol {
 	
 	public boolean manageStartup() {
 		if (gameState == NOT_FULL) {
-			System.out.println(connections + " : " + playersReady);
 			if (connections == 2 && playersReady < 2)
 				gameState = 1;
 			else if (connections == 2 && playersReady == 2)
 				gameState = 2;
 		} else if (gameState == LOBBY_FULL) {
-			System.out.println(connections + " : " + playersReady);
 			if (connections < 2)
 				gameState = 0;
 			else if (playersReady == 2)

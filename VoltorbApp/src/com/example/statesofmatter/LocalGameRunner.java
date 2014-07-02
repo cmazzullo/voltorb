@@ -20,6 +20,8 @@ public class LocalGameRunner extends Thread {
 	private boolean isReady = false;
 	private boolean battleStarted = false;
 	
+	public Object lock = new Object();
+	
 	private Socket playerSocket;
 	public static ObjectInputStream input;
 	public static ObjectOutputStream output;
@@ -257,19 +259,25 @@ public class LocalGameRunner extends Thread {
 		connect("localhost", 4444);
 		try {
 			while (!isReady) {
-				output.writeObject(isReady);
-				Thread.sleep(1000);
-				System.out.println("waiting");
+				synchronized (lock) {
+					try {
+						lock.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
 			}
 			System.out.println("moving on");
 			output.writeObject(isReady);
 			output.writeObject(player);
+			Object o;
 			while (!battleStarted) {
-				Object o;
-				Thread.sleep(1000);
 				if ((o = input.readObject()) != null && (Boolean)o == true) {
 					oppLead = (Monster)input.readObject();
 					battleStarted = true;
+					synchronized (lock) {
+						lock.notifyAll();
+					}
 				}
 			}
 			System.out.println("Battle started!");
@@ -281,14 +289,20 @@ public class LocalGameRunner extends Thread {
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
-			
+			try {
+				if (input != null)
+					input.close();
+				if (output != null);
+					output.close();
+				if (playerSocket != null)
+					playerSocket.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
