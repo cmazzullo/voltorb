@@ -9,5 +9,9 @@ package com.example.statesofmatter;
 
 public interface TurnInterface {
     
-    public void executeTurn(Player player);
+	 public PlayerAction getAction();
+	 
+	 public int getArgument();
+	
+    //TODO public void executeTurn(Player player); here or fakeserverprotocol?
 }

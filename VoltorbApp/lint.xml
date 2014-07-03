@@ -4,5 +4,6 @@
         <ignore path="src/com/example/statesofmatter/Attack.java" />
         <ignore path="src/com/example/statesofmatter/Item.java" />
         <ignore path="src/com/example/statesofmatter/Monster.java" />
+        <ignore path="src/com/example/statesofmatter/Turn.java" />
     </issue>
 </lint>

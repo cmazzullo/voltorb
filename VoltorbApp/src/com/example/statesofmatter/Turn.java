@@ -12,43 +12,22 @@ public class Turn implements TurnInterface, Serializable {
 
     private PlayerAction action;
     private int argument;
-    private boolean isDone;
     
-    public Turn (PlayerAction action, int argument) {
+    public Turn (PlayerAction action, int argument) { //TODO: include state as arg since state can be set in same turn as a move
     	this.action = action;
     	this.argument = argument;
-    	this.isDone = false;
     }
     
-    public void executeTurn(Player player) {
-    	switch (action) {
-			case SWITCH:
-				Monster[] team = player.getTeam();
-				player.setLead(team[argument]);
-				setIsDone(true);
-				break;
-			case ATTACK:
-				
-			case STATE_SHIFT:
-				Monster toShift = player.getTeam()[argument];
-				
-			case ITEM:
-    	}
-    }
-    
-    public PlayerAction getAction(){
+    public PlayerAction getAction() {
     	return action;
     }
     
-    public int getArgument(){
+    public int getArgument() {
     	return argument;
     }
     
-    public boolean getIsDone() {
-    	return isDone;
-    }
-    
-    public void setIsDone(boolean isDone) {
-    	this.isDone = isDone;
+    @Override
+    public String toString() {
+    	return String.format("%s : %d", action, argument);
     }
 }

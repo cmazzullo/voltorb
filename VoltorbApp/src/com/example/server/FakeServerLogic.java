@@ -3,10 +3,18 @@
  * the Server interface. 
  */
 
-package com.example.statesofmatter;
+package com.example.server;
 
 import java.io.*;
 import java.util.Scanner;
+
+import com.example.statesofmatter.Attack;
+import com.example.statesofmatter.Monster;
+import com.example.statesofmatter.Player;
+import com.example.statesofmatter.PlayerAction;
+import com.example.statesofmatter.State;
+import com.example.statesofmatter.Turn;
+
 import android.annotation.TargetApi;
 
 public class FakeServerLogic{

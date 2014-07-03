@@ -1,9 +1,17 @@
-package com.example.statesofmatter;
+/**A server thread
+ * Talks with client over socket using object streams
+ * Implements FakeServerProtocol for game logic and managing game state flow
+ */
+package com.example.server;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+
+import com.example.statesofmatter.Monster;
+import com.example.statesofmatter.Player;
+import com.example.statesofmatter.Turn;
 
 public class UserThread extends Thread {
 	
@@ -11,9 +19,12 @@ public class UserThread extends Thread {
 	
 	private ObjectOutputStream output;
 	private ObjectInputStream input;
+	
 	private int playerNum;
 	private Player player;
 	private Monster oppLead;
+	private Turn currentTurn;
+	
 	private boolean playerReady = false;
 	private boolean battleStarted = false;
 	private boolean gameOver = false;
@@ -29,12 +40,16 @@ public class UserThread extends Thread {
 		return player;
 	}
 	
+	public Turn getTurn() {
+		return currentTurn;
+	}
+	
 	public void run() {
+		Object o;
 		try {
 			FakeServer.fsp.incConnection();
 			FakeServer.fsp.manageStartup();
 			while (!playerReady) {
-				Object o;
 				if ((o = input.readObject()) != null && (Boolean)o == true) {
 					player = (Player)input.readObject();
 					playerReady = true;
@@ -63,18 +78,32 @@ public class UserThread extends Thread {
 			}
 			
 			System.out.println("Print me when everyone's ready to battle!");
-		
-			while (!gameOver) {
+			boolean turnProcessing;
+			Monster[] returnArray;
 			
+			while (!gameOver) {
+				if ((Turn)(o = input.readObject()) != null) {
+					System.out.println("got a turn");
+					currentTurn = (Turn)o;
+					turnProcessing = true;
+					FakeServer.fsp.incTurns();
+					 do {
+						returnArray = FakeServer.fsp.runBattle(playerNum);
+						if (returnArray != null) {
+							player.setLead(returnArray[0]);
+							oppLead = returnArray[1];
+							System.out.println(returnArray[0].getName() + " : " + returnArray[1].getName());
+							output.writeObject(returnArray);
+							turnProcessing = false;
+						}
+					} while (turnProcessing);
+				}	
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			try {

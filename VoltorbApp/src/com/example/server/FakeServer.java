@@ -1,4 +1,8 @@
-package com.example.statesofmatter;
+/**Server connection listener
+ * Listens for connections from client and passes them into UserThread before 
+ * continuing to listen for more connections.
+ */
+package com.example.server;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;

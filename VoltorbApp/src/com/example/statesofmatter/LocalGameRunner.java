@@ -14,11 +14,12 @@ import java.util.Scanner;
 import android.annotation.TargetApi;
 
 @TargetApi(19)
-public class LocalGameRunner extends Thread {
+public class LocalGameRunner implements Runnable {
 	
-	public Thread lgrThread;
 	private boolean isReady = false;
 	private boolean battleStarted = false;
+	private boolean turnReady = false; //should be set to false once move selected and set back to true once turn is resolved
+	private boolean gameOver = false;
 	
 	public Object lock = new Object();
 	
@@ -33,7 +34,6 @@ public class LocalGameRunner extends Thread {
 	private String playerID;
 	private String playerName;
 	private Player player;
-	private Monster myLead;
 	private Monster oppLead;
 	private PlayerAction action = PlayerAction.PASS;
 	private int argument;
@@ -91,6 +91,14 @@ public class LocalGameRunner extends Thread {
 		return battleStarted;
 	}
 	
+	public boolean getTurnReady() {
+		return turnReady;
+	}
+	
+	public void setTurnReady(boolean ready) {
+		this.turnReady = ready;
+	}
+	
 	public void addToTeam(String monster, int fromIndex) throws Exception{
 		int count = 0;
 		for (Monster m : player.getTeam()) {
@@ -132,85 +140,6 @@ public class LocalGameRunner extends Thread {
 			player.setTeam(updatedTeam);
 		}
 	}
-	
-    //All of these methods should go into a separate game logic class 
-    /*private void doTurns(Player player) {
-    	Turn myTurn = new Turn(action, argument);
-        //Turn oppTurn = FakeServerLogic.getTurn(FakeServerLogic.getPlayer(oppID));
-        myLead = player.getLead();
-        //oppLead = FakeServerLogic.getPlayer(oppID).getLead();
-        //calculate turn
-        PlayerAction myAction = action;
-        PlayerAction oppAction = oppTurn.getAction();
-        boolean myComplete = false;
-        boolean oppComplete = false;
-        
-        //make speed comparison
-        
-        boolean meFirst = false;
-        if(myLead.getSpeed() > oppLead.getSpeed()){
-        	meFirst = true;
-        }else if (myLead.getSpeed() == oppLead.getSpeed()) {
-        	//TODO:  What to do during speed tie
-        	//send isTied boolean to server, server does tie-breaker only,
-        	//sends result back to clients. First client executes turn and sends
-        	//results to server, to second client, second client goes.
-        	//FakeServerLogic.isTie(player);
-        }
-        
-        if(myAction == PlayerAction.SWITCH || oppAction == PlayerAction.SWITCH){
-        	if(meFirst && myAction == PlayerAction.SWITCH){
-        		player.switchLead(myTurn.getArgument());
-        		myLead = player.getLead();
-        		myComplete = true;
-        	}
-        	if(oppAction == PlayerAction.SWITCH){
-        		//switch
-        		oppComplete = false;
-        	}
-        	if(!meFirst && myAction == PlayerAction.SWITCH){
-        		//switch
-        		myComplete = true;
-        	}
-        }
-        
-        if(!myComplete && meFirst){
-        	if(myAction == PlayerAction.ATTACK){
-        	}
-        	else if(myAction == PlayerAction.ITEM){
-        	}
-        	else if(myAction == PlayerAction.STATE_SHIFT){
-        	}
-        	else if(myAction == PlayerAction.PASS){
-        	}
-        }
-        
-        if(!oppComplete){
-        	if(oppAction == PlayerAction.ATTACK){
-        	}
-        	else if(oppAction == PlayerAction.ITEM){
-        	}
-        	else if(oppAction == PlayerAction.STATE_SHIFT){
-        	}
-        	else if(oppAction == PlayerAction.PASS){
-        	}      	
-        }
-        
-        if(!myComplete && !meFirst){
-        	if(myAction == PlayerAction.ATTACK){
-        	}
-        	else if(myAction == PlayerAction.ITEM){
-        	}
-        	else if(myAction == PlayerAction.STATE_SHIFT){
-        	}
-        	else if(myAction == PlayerAction.PASS){
-        	}
-        }
-    }*/
-
-    /*private static void doPostGame() {
-        
-    }*/
     
     public void startClient() {
     	try {
@@ -221,11 +150,13 @@ public class LocalGameRunner extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		start();
+		Thread thread = new Thread(this);
+		thread.start();
 	}
 	
 	private void fetchPlayerInfo() throws IOException, FileNotFoundException {
-		try (Scanner sc = new Scanner(new BufferedReader(new FileReader("PlayerID.txt")));) {
+		try (Scanner sc = new Scanner(new BufferedReader
+									 (new FileReader("PlayerID.txt")));) {
 			sc.useDelimiter(":");
 			playerID = sc.next();		
 			playerName = sc.next();
@@ -245,7 +176,7 @@ public class LocalGameRunner extends Thread {
             System.err.println("Unknown host " + host);
             System.exit(1);
         } catch (IOException e) {
-            System.err.println("Couldn't get I/O for the connection to " + host);
+            System.err.println("Couldn't get I/O for connection to " + host);
             System.exit(1);
         }
 	}
@@ -281,16 +212,44 @@ public class LocalGameRunner extends Thread {
 				}
 			}
 			System.out.println("Battle started!");
+			turnReady = true;
 		
-			while (true) {
-			
+			while (!gameOver) {
+				do {
+					synchronized (lock) {
+						try {
+							lock.wait();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+					Thread.sleep(100);
+				System.out.println("escaped gamerunnner lock");
+				} while (turnReady);
+				System.out.println("turn set to ready");
+				Turn turn = new Turn(action, argument);
+				Monster[] returnArray;
+				output.writeObject(turn);
+				System.out.println("wrote the turn");
+				returnArray = (Monster[])input.readObject();
+				System.out.println("got a monster[] back");
+				player.setLead(returnArray[0]);
+				oppLead = returnArray[1];
+				System.out.println(returnArray[0].getName() + " : " + returnArray[1].getName());
+				System.out.println(player.getLead().getName());
+				System.out.println(oppLead.getName());
+				turnReady = true;
+				synchronized (lock) {
+					lock.notifyAll();
+				}
+				System.out.println("released gamerunner lock");
 			}
 			
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} finally {
 			try {
@@ -305,29 +264,4 @@ public class LocalGameRunner extends Thread {
 			}
 		}
 	}
-	
-    /*public static void main(String[] args) throws IOException, Exception {
-    	LocalGameRunner runner = new LocalGameRunner();
-        runner.start();
-        System.out.println(playerID + ":" + playerName);
-        
-    	String host = "localhost";
-    	int port = 4444;
-    	runner.connect(host, port);
-    	output.writeObject("tied");
-
-    	boolean connected = false;
-        while (true) {
-        	Object o;
-        	if ((o = input.readObject()) != null) {
-        		if (((Boolean)o).equals(true))
-        			System.out.println(o);
-        		else
-        			System.out.println("Not " + o);
-        	}
-            runner.doTurns(player);
-            opponentTurn.executeTurn(opponent);
-        }
-        doPostGame();
-    }*/
 }

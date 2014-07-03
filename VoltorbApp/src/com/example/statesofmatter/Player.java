@@ -64,7 +64,8 @@ public class Player implements PlayerInterface, Serializable {
     	}
     
     public void addMonster(Monster m, int position) throws Exception {
-    	if(position >= MAX_TEAM_SIZE) throw new Exception("Position exceeds team size limit.  position = " + position);
+    	if(position >= MAX_TEAM_SIZE) throw new Exception("Position exceeds "
+    							   + "team size limit. position = " + position);
     	if(m == null) throw new Exception("Paramater Monster is null.");
     	team[position] = m;
     }
@@ -75,7 +76,7 @@ public class Player implements PlayerInterface, Serializable {
     		if (team[i] != null)
     			size++;
     	}
-    	if(size == 0) throw new Exception("There are no monsters on your team.");
+    	if(size == 0) throw new Exception("There are no monsters on your team");
     	if(m == null) throw new Exception("Paramater Monster is null.");
     	team[position] = null;
     }

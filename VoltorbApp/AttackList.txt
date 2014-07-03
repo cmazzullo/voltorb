@@ -7,3 +7,4 @@ Tickle;AIR;6
 Stare Blankly;EARTH;7
 Get Fired;FIRE;8
 Zap;FIRE;9
+Splash;WATER;0
