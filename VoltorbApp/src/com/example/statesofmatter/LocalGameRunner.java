@@ -209,6 +209,7 @@ public class LocalGameRunner implements Runnable {
 			turnReady = true;
 		
 			while (!gameOver) {
+				System.out.println(player.getLead().getHP() + " : " + oppLead.getHP());
 				do {
 					synchronized (lock) {
 						try {
@@ -226,6 +227,7 @@ public class LocalGameRunner implements Runnable {
 				output.writeUnshared(turn);
 				System.out.println("wrote the turn");
 				player.setLead((Monster)input.readUnshared());
+				oppLead = (Monster)input.readUnshared();
 				System.out.println(player.getLead().getHP());
 				System.out.println(oppLead.getHP());
 				turnReady = true;

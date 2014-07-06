@@ -98,15 +98,15 @@ public class UserThread extends Thread {
 					}
 					returnArray = FakeServer.getReturnArray();
 					currentTurn = null;
-					if (playerNum == 1) {
+					if (playerNum == 0) {
 						player.setLead(returnArray[0]);
 						output.writeUnshared(player.getLead());
 						oppLead = returnArray[1];
 						output.writeUnshared(oppLead);
-					} else if (playerNum == 0) {
-						player.setLead(returnArray[0]);
+					} else if (playerNum == 1) {
+						player.setLead(returnArray[1]);
 						output.writeUnshared(player.getLead());
-						oppLead = returnArray[1];
+						oppLead = returnArray[0];
 						output.writeUnshared(oppLead);
 					}	
 				}
