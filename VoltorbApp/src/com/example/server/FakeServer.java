@@ -9,6 +9,8 @@ import java.io.ObjectOutputStream;
 import java.io.IOException;
 import java.net.*;
 
+import com.example.statesofmatter.Monster;
+
 import android.annotation.TargetApi;
 
 @TargetApi(19)
@@ -25,6 +27,12 @@ public class FakeServer extends Thread implements Runnable {
 	private ObjectInputStream input;
 	private ObjectOutputStream output;
 	static UserThread[] users = new UserThread[2]; //TODO: Make array list of user arrays
+	public static Object lock = new Object();
+	private static boolean battleStarted;
+	private static boolean gameOver;
+	private static boolean turnsReady;
+	private static boolean turnProcessed;
+	private static Monster[] returnArray;
 	
 	private FakeServer() throws IOException {
 		try {
@@ -40,10 +48,15 @@ public class FakeServer extends Thread implements Runnable {
 						setupStreams(playerSocket);
 						users[i] = new UserThread(output, input, i);
 						users[i].start();
+						fsp.incConnection();
+						fsp.manageStartup();
 						System.out.println("Connection made");
 						break;
 					}
 				}
+			//TODO temp code until lobbies implemented
+				if (users[1] != null)
+					isRunning = false;
 			}
 		} catch (IOException e) {
 			System.err.println("Could not use port " + PORT);
@@ -59,7 +72,54 @@ public class FakeServer extends Thread implements Runnable {
 		input = new ObjectInputStream(s.getInputStream());
 	}
 	
-	public static void main(String[] args) throws IOException {
+	public static boolean getBattleStarted() {
+		return battleStarted;
+	}
+	
+	public static boolean getTurnProcessed() {
+		return turnProcessed;
+	}
+	
+	public static Monster[] getReturnArray() {
+		return returnArray;
+	}
+	
+	public static void main(String[] args) throws IOException, InterruptedException {
 		new FakeServer();
+		
+		while (!battleStarted) {
+			try {
+				Thread.sleep(200);
+			} catch (InterruptedException e) {}
+			boolean starting = FakeServer.fsp.manageStartup();
+			if (starting == true) {
+				battleStarted = true;
+				synchronized (lock) {
+					lock.notifyAll();
+				}
+			}
+		}
+		//TODO look into event queues so this can be synced with both UserThreads without messing up
+		// ie receiving both notify messages before second lock
+		while (!gameOver) {
+			System.out.println("starting round");
+			turnsReady = false;
+			turnProcessed = false;
+			do {
+				Thread.sleep(200);
+				returnArray = fsp.runBattle();
+				if (fsp.getTurnsReady() == 2) {
+					turnsReady = true;
+				}
+			} while (!turnsReady);
+			
+			returnArray = fsp.runBattle();
+			fsp.resetTurns();
+			turnProcessed = true;
+
+			synchronized (lock) {
+				lock.notifyAll();
+			}
+		}
 	}
 }

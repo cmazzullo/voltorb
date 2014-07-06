@@ -10,19 +10,10 @@ public class Database {
     public HashMap<String, Monster> MonsterMap;
     public HashMap<String, Attack> AttackMap;
     public HashMap<String, Item> ItemMap;
-    private String attackFile;
-    private String itemFile;
-    private String monsterFile;
 
     public Database () {
         // We need to read in all the Monster and Attack data from
         // text files or something here
-    }
-    
-    public Database (String attackFile, String itemFile, String monsterFile) {
-    	this.attackFile = attackFile;
-    	this.itemFile = itemFile;
-    	this.monsterFile = monsterFile;
     }
  
     public Monster getMonster (String name) throws Exception {
@@ -56,9 +47,9 @@ public class Database {
     	Scanner sm = null;
     	
     	try {
-    		sa = new Scanner(new BufferedReader(new FileReader(attackFile)));
-    		si = new Scanner(new BufferedReader(new FileReader(itemFile)));
-    		sm = new Scanner(new BufferedReader(new FileReader(monsterFile)));
+    		sa = new Scanner(new BufferedReader(new FileReader("AttackList.txt")));
+    		si = new Scanner(new BufferedReader(new FileReader("ItemList.txt")));
+    		sm = new Scanner(new BufferedReader(new FileReader("MonsterList.txt")));
     		AttackMap = new HashMap<String, Attack>();
     		ItemMap = new HashMap<String, Item>();
     		MonsterMap = new HashMap<String, Monster>();
@@ -67,7 +58,10 @@ public class Database {
     			String[] tempAttack = sa.nextLine().split(";");
     			Attack newAttack = new Attack(tempAttack[0], 
     										  Element.valueOf(tempAttack[1]),
-    										  Integer.parseInt(tempAttack[2]));
+    										  Integer.parseInt(tempAttack[2]),
+    										  Status.valueOf(tempAttack[3]),
+    										  BuffDebuff.valueOf(tempAttack[4]),
+    										  BuffDebuff.valueOf(tempAttack[5]));
     			AttackMap.put(tempAttack[0], newAttack);
     		} while (si.hasNextLine()) {
     			String[] tempItem = si.nextLine().split(";");

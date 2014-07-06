@@ -11,9 +11,6 @@ public interface AttackInterface {
 	
 	public Status getStatEffect();
 	
-	//attack applicator methods
-	public void applyStatus(Monster monster, Status status);
-	
 	//string methods
 	@Override
 	public String toString();

@@ -12,10 +12,14 @@ public class Turn implements TurnInterface, Serializable {
 
     private PlayerAction action;
     private int argument;
+    private State state;
     
-    public Turn (PlayerAction action, int argument) { //TODO: include state as arg since state can be set in same turn as a move
+    public Turn() {}
+    
+    public Turn (PlayerAction action, int argument, State state) { //TODO: include state as arg since state can be set in same turn as a move
     	this.action = action;
     	this.argument = argument;
+    	this.state = state;
     }
     
     public PlayerAction getAction() {
@@ -26,8 +30,12 @@ public class Turn implements TurnInterface, Serializable {
     	return argument;
     }
     
+    public State getState() {
+    	return state;
+    }
+    
     @Override
     public String toString() {
-    	return String.format("%s : %d", action, argument);
+    	return String.format("%s : %d : %s", action, argument, state);
     }
 }

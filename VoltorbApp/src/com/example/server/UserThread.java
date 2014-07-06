@@ -20,13 +20,12 @@ public class UserThread extends Thread {
 	private ObjectOutputStream output;
 	private ObjectInputStream input;
 	
-	private int playerNum;
+	public int playerNum;
 	private Player player;
 	private Monster oppLead;
 	private Turn currentTurn;
 	
 	private boolean playerReady = false;
-	private boolean battleStarted = false;
 	private boolean gameOver = false;
 	
 	public UserThread(ObjectOutputStream out, ObjectInputStream in, 
@@ -46,64 +45,75 @@ public class UserThread extends Thread {
 	
 	public void run() {
 		Object o;
+		System.out.println(playerNum);
 		try {
-			FakeServer.fsp.incConnection();
-			FakeServer.fsp.manageStartup();
 			while (!playerReady) {
-				if ((o = input.readObject()) != null && (Boolean)o == true) {
-					player = (Player)input.readObject();
+				if ((o = input.readUnshared()) != null && (Boolean)o == true) {
+					player = (Player)input.readUnshared();
 					playerReady = true;
 					FakeServer.fsp.incReady();
 					System.out.println("I'm ready");	
 				}
 			}
 
-			while (!battleStarted) {
-				Thread.sleep(1000);
-				boolean starting = FakeServer.fsp.manageStartup();
-				if (starting == true) {
-					if (playerNum == 0) {
-						if (FakeServer.users[1] != null &&
-							FakeServer.users[1].getPlayer() != null)
-							oppLead = FakeServer.users[1].getPlayer().getLead();
-					} else {
-						if (FakeServer.users[0] != null &&
-							FakeServer.users[0].getPlayer() != null)
-							oppLead = FakeServer.users[0].getPlayer().getLead();
+			while (!FakeServer.getBattleStarted()) {
+				synchronized (FakeServer.lock) {
+					try {
+						FakeServer.lock.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
 					}
-					output.writeObject((Boolean)starting);
-					output.writeObject((Monster)oppLead);
-					battleStarted = true;
 				}
 			}
 			
+			if (playerNum == 0) {
+				if (FakeServer.users[1] != null &&
+					FakeServer.users[1].getPlayer() != null)
+					oppLead = FakeServer.users[1].getPlayer().getLead();
+			} else {
+				if (FakeServer.users[0] != null &&
+					FakeServer.users[0].getPlayer() != null)
+					oppLead = FakeServer.users[0].getPlayer().getLead();
+			}
+			
+			output.writeUnshared((Boolean)FakeServer.getBattleStarted());
+			output.writeUnshared((Monster)oppLead);
 			System.out.println("Print me when everyone's ready to battle!");
-			boolean turnProcessing;
 			Monster[] returnArray;
 			
 			while (!gameOver) {
-				if ((Turn)(o = input.readObject()) != null) {
-					System.out.println("got a turn");
+				o = input.readUnshared();
+				if ((Turn)o != null) {
 					currentTurn = (Turn)o;
-					turnProcessing = true;
 					FakeServer.fsp.incTurns();
-					 do {
-						returnArray = FakeServer.fsp.runBattle(playerNum);
-						if (returnArray != null) {
-							player.setLead(returnArray[0]);
-							oppLead = returnArray[1];
-							System.out.println(returnArray[0].getName() + " : " + returnArray[1].getName());
-							output.writeObject(returnArray);
-							turnProcessing = false;
+
+					while (!FakeServer.getTurnProcessed()) {
+						synchronized (FakeServer.lock) {
+							try {
+								FakeServer.lock.wait();
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
 						}
-					} while (turnProcessing);
-				}	
+					}
+					returnArray = FakeServer.getReturnArray();
+					currentTurn = null;
+					if (playerNum == 1) {
+						player.setLead(returnArray[0]);
+						output.writeUnshared(player.getLead());
+						oppLead = returnArray[1];
+						output.writeUnshared(oppLead);
+					} else if (playerNum == 0) {
+						player.setLead(returnArray[0]);
+						output.writeUnshared(player.getLead());
+						oppLead = returnArray[1];
+						output.writeUnshared(oppLead);
+					}	
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} finally {
 			try {

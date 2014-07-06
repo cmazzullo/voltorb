@@ -27,9 +27,6 @@ public class LocalGameRunner implements Runnable {
 	public static ObjectInputStream input;
 	public static ObjectOutputStream output;
 	
-	private String attackFile;
-	private String itemFile;
-	private String monsterFile;
 	private Database d;
 	private String playerID;
 	private String playerName;
@@ -37,19 +34,8 @@ public class LocalGameRunner implements Runnable {
 	private Monster oppLead;
 	private PlayerAction action = PlayerAction.PASS;
 	private int argument;
+	private State turnState;
 	
-	
-	public void setAttFile(String attackFile) {
-		this.attackFile = attackFile;
-	}
-	
-	public void setItemFile(String itemFile) {
-		this.itemFile = itemFile;
-	}
-	
-	public void setMonFile(String monsterFile) {
-		this.monsterFile = monsterFile;
-	}
 	
 	public Database getDbase() {
 		return d;
@@ -77,6 +63,14 @@ public class LocalGameRunner implements Runnable {
 	
 	public void setArgument(int argument) {
 		this.argument = argument;
+	}
+	
+	public State getTurnState() {
+		return turnState;
+	}
+	
+	public void setTurnState(State turnState) {
+		this.turnState = turnState;
 	}
 	
 	public boolean getIsReady() {
@@ -144,7 +138,7 @@ public class LocalGameRunner implements Runnable {
     public void startClient() {
     	try {
 			fetchPlayerInfo();
-			d = new Database(attackFile, itemFile, monsterFile);
+			d = new Database();
 			d.getData();
 			player = new Player(playerName, playerID);
 		} catch (IOException e) {
@@ -199,12 +193,12 @@ public class LocalGameRunner implements Runnable {
 				}
 			}
 			System.out.println("moving on");
-			output.writeObject(isReady);
-			output.writeObject(player);
+			output.writeUnshared(isReady);
+			output.writeUnshared(player);
 			Object o;
 			while (!battleStarted) {
-				if ((o = input.readObject()) != null && (Boolean)o == true) {
-					oppLead = (Monster)input.readObject();
+				if ((o = input.readUnshared()) != null && (Boolean)o == true) {
+					oppLead = (Monster)input.readUnshared();
 					battleStarted = true;
 					synchronized (lock) {
 						lock.notifyAll();
@@ -226,23 +220,15 @@ public class LocalGameRunner implements Runnable {
 					Thread.sleep(100);
 				System.out.println("escaped gamerunnner lock");
 				} while (turnReady);
+				
 				System.out.println("turn set to ready");
-				Turn turn = new Turn(action, argument);
-				Monster[] returnArray;
-				output.writeObject(turn);
+				Turn turn = new Turn(action, argument, turnState);
+				output.writeUnshared(turn);
 				System.out.println("wrote the turn");
-				returnArray = (Monster[])input.readObject();
-				System.out.println("got a monster[] back");
-				player.setLead(returnArray[0]);
-				oppLead = returnArray[1];
-				System.out.println(returnArray[0].getName() + " : " + returnArray[1].getName());
-				System.out.println(player.getLead().getName());
-				System.out.println(oppLead.getName());
+				player.setLead((Monster)input.readUnshared());
+				System.out.println(player.getLead().getHP());
+				System.out.println(oppLead.getHP());
 				turnReady = true;
-				synchronized (lock) {
-					lock.notifyAll();
-				}
-				System.out.println("released gamerunner lock");
 			}
 			
 		} catch (IOException e1) {

@@ -15,8 +15,6 @@ import com.example.statesofmatter.PlayerAction;
 import com.example.statesofmatter.State;
 import com.example.statesofmatter.Turn;
 
-import android.annotation.TargetApi;
-
 public class FakeServerLogic{
     
     static String p1ID, p2ID = null;

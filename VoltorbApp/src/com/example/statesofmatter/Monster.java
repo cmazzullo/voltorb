@@ -208,19 +208,15 @@ public class Monster implements MonsterInterface, Serializable {
     
     //methods to check and resolve a Monster's status at the
     //beginning of each turn
-    /*private void checkStatus(Status currentStatus, int[] currentEquip) {
-    	currentStatus = this.getStatus();
-    	currentEquip = this.getEquip();
-    	if (currentStatus != Status.NORMAL) {
-    		//count duration
-    	}
-    	if (currentStatus != Status.NORMAL) {
-    		for (int i=0; i<currentEquip.length; i++) {
+    public void resolveStatus() {
+    	//TODO count down status timer, see if monster shakes it off
+    	if (status != Status.NORMAL) {
+    		for (int i=0; i<equipment.length; i++) {
     			//if (currentEquip[i].getType() == Item.CURE && 
     				//currentEquip[i].getCureType == currentStatus.getStatus()) {
     				//this.useItem(currentEquip[i];
     			//}
     		}
     	}
-    }*/
+    }
 }
