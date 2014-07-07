@@ -68,15 +68,15 @@ public class Database {
     			Item newItem;
     			if (tempItem.length == 3 && tempItem[2].length() <= 5) {
     				newItem = new Item(tempItem[0], 
-    								   Item.ItemType.valueOf(tempItem[1]),
+    								   ItemType.valueOf(tempItem[1]),
     								   Integer.parseInt(tempItem[2]));
     			} else if (tempItem.length == 3 && tempItem[2].length() > 5) {
     				newItem = new Item(tempItem[0], 
-							  		   Item.ItemType.valueOf(tempItem[1]),
+							  		   ItemType.valueOf(tempItem[1]),
 							  		   Status.valueOf(tempItem[2]));
     			} else {
     				newItem = new Item(tempItem[0], 
-							  		   Item.ItemType.valueOf(tempItem[1]));
+							  		   ItemType.valueOf(tempItem[1]));
     			}
     			ItemMap.put(tempItem[0], newItem);
     		} while (sm.hasNextLine()) {	

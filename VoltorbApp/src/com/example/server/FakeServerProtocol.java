@@ -12,18 +12,27 @@ import com.example.statesofmatter.Status;
 import com.example.statesofmatter.Turn;
 
 public class FakeServerProtocol {
-	
 	private final int NOT_FULL = 0;
 	private final int LOBBY_FULL = 1;
 	private final int LOBBY_READY = 2;
 	private final int TURN_WAITING = 3;
 	private final int TURNS_READY = 4;
 	
+	private int lobbyNum = -1;
+	
 	private int gameState = 0;
 	private int connections = 0;
 	private int playersReady = 0;
 	private int turnsReady = 0;
 
+	public FakeServerProtocol(int lobbyNum) {
+		this.lobbyNum = lobbyNum;
+	}
+	
+	public int getLobbyNum() {
+		return lobbyNum;
+	}
+	
 	public void incConnection() {
 		connections++;
 	}
@@ -83,16 +92,31 @@ public class FakeServerProtocol {
 				gameState = 4;
 		} else if (gameState == TURNS_READY) {
 			Monster[] returnArray;
-			returnArray = executeTurns(FakeServer.users[0].getTurn(), 
-									FakeServer.users[0].getPlayer().getLead(),
-									FakeServer.users[1].getTurn(), 
-									FakeServer.users[1].getPlayer().getLead());
+			returnArray = executeTurns(FakeServer.getLobby(lobbyNum).getUserThread()[0].getTurn(), 
+					FakeServer.getLobby(lobbyNum).getUserThread()[0].getPlayer().getLead(),
+					FakeServer.getLobby(lobbyNum).getUserThread()[1].getTurn(), 
+					FakeServer.getLobby(lobbyNum).getUserThread()[1].getPlayer().getLead());
 			gameState = 3;
 			return returnArray;
 		}
 		return null;
 	}	
+	
+	private Monster[] executeTurns(Turn p1Turn, Monster p1Lead, Turn p2Turn, Monster p2Lead) {
+		boolean p1First = battleOrder(p1Turn, p1Lead, p2Turn, p2Lead);
 
+		if (p1First) {
+			Monster[] turnOne = doTurn(0, 1, p1Turn, p1Lead, p2Lead);
+			Monster[] turnTwo = doTurn(1, 0, p2Turn, turnOne[1], turnOne[0]);
+
+			return new Monster[] { turnTwo[1], turnTwo[0] }; 
+		} else {
+			Monster[] turnOne = doTurn(1, 0, p2Turn, p2Lead, p1Lead);
+			Monster[] endTurn = doTurn(0, 1, p1Turn, turnOne[1], turnOne[0]);
+			return endTurn;
+		}
+	}
+	
 	private boolean battleOrder(Turn p1Turn, Monster p1Lead, Turn p2Turn, Monster p2Lead) {
 		if (p1Turn.getAction() == PlayerAction.SWITCH || 
 			p2Turn.getAction() == PlayerAction.SWITCH) {
@@ -131,25 +155,10 @@ public class FakeServerProtocol {
 		}
 	}
 	
-	//TODO Should these method go in Turn class?
-	private Monster[] executeTurns(Turn p1Turn, Monster p1Lead, Turn p2Turn, Monster p2Lead) {
-		boolean p1First = battleOrder(p1Turn, p1Lead, p2Turn, p2Lead);
-
-		if (p1First) {
-			Monster[] turnOne = doTurn(0, 1, p1Turn, p1Lead, p2Lead);
-			Monster[] turnTwo = doTurn(1, 0, p2Turn, turnOne[1], turnOne[0]);
-
-			return new Monster[] { turnTwo[1], turnTwo[0] }; 
-		} else {
-			Monster[] turnOne = doTurn(1, 0, p2Turn, p2Lead, p1Lead);
-			Monster[] endTurn = doTurn(0, 1, p1Turn, turnOne[1], turnOne[0]);
-			return endTurn;
-		}
-	}
 	// TODO may or may not need p2Num
 	private Monster[] doTurn(int actPlayer, int recPlayer, Turn playerTurn, Monster actLead, Monster recLead) {
 		if (playerTurn.getAction() == PlayerAction.SWITCH) {
-			actLead = FakeServer.users[actPlayer].getPlayer().getTeam()[playerTurn.getArgument()];
+			actLead = FakeServer.getLobby(lobbyNum).getUserThread()[actPlayer].getPlayer().getTeam()[playerTurn.getArgument()];
 			return new Monster[] { actLead, recLead };	
 		} else {
 			if (actLead.getStatus() != Status.NORMAL || 
@@ -168,8 +177,8 @@ public class FakeServerProtocol {
 						break;
 					}
 			}	
-			if (playerTurn.getState() != FakeServer.users[actPlayer].getPlayer().getLead().getState()) {
-				FakeServer.users[actPlayer].getPlayer().getLead().setState(playerTurn.getState());
+			if (playerTurn.getState() != FakeServer.getLobby(lobbyNum).getUserThread()[actPlayer].getPlayer().getLead().getState()) {
+				FakeServer.getLobby(lobbyNum).getUserThread()[actPlayer].getPlayer().getLead().setState(playerTurn.getState());
 			}
 			if (playerTurn.getAction() == PlayerAction.ATTACK) {
 				//do damage to receivingLead

@@ -8,6 +8,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.IOException;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 import com.example.statesofmatter.Monster;
 
@@ -20,19 +24,16 @@ public class FakeServer extends Thread implements Runnable {
 	private static final int PORT = 4444;
 	private static Socket playerSocket;
 	
-	public static final FakeServerProtocol fsp = new FakeServerProtocol();
-	
 	private static boolean isRunning = false;
 	
 	private ObjectInputStream input;
 	private ObjectOutputStream output;
-	static UserThread[] users = new UserThread[2]; //TODO: Make array list of user arrays
-	public static Object lock = new Object();
-	private static boolean battleStarted;
-	private static boolean gameOver;
-	private static boolean turnsReady;
-	private static boolean turnProcessed;
-	private static Monster[] returnArray;
+	static List<UserThread> connUsers = Collections.synchronizedList(new ArrayList<UserThread>());
+	static List<FakeLobby> lobbies = new ArrayList<FakeLobby>();
+	static HashMap<Integer, FakeLobby> lobbyMap = new HashMap<Integer, FakeLobby>();
+	private int nextConn;
+	private int nextLobby;
+	
 	
 	private FakeServer() throws IOException {
 		try {
@@ -40,23 +41,37 @@ public class FakeServer extends Thread implements Runnable {
 			serverSocket = new ServerSocket(PORT);
 			System.out.println("Successfully started on port " + PORT);
 			isRunning = true;
+			UserThread newUser;
+			FakeLobby newLobby;
 			
 			while (isRunning) {
 				playerSocket = serverSocket.accept();
-				for (int i = 0; i< users.length; i++) {
-					if (users[i] == null) {
-						setupStreams(playerSocket);
-						users[i] = new UserThread(output, input, i);
-						users[i].start();
-						fsp.incConnection();
-						fsp.manageStartup();
-						System.out.println("Connection made");
-						break;
-					}
+				setupStreams(playerSocket);
+				newUser = new UserThread(output, input);
+				connUsers.add(newUser);
+				connUsers.get(nextConn).start();
+				System.out.println("Connection made");
+				
+				if (nextConn % 2 == 0) {
+					newLobby = new FakeLobby(nextLobby);
+					System.out.println("created new lobby");
+					newUser.setInLobby(true);
+					newUser.setLobbyNum(nextLobby);
+					newLobby.addPlayer(newUser);
+					newLobby.start();
+					System.out.println("added user to lobby");
+					lobbyMap.put(nextLobby, newLobby);
+					System.out.println("put lobby in map");
+				} else {
+					newUser.setInLobby(true);
+					newUser.setLobbyNum(nextLobby);
+					lobbyMap.get(nextLobby).addPlayer(newUser);
+					System.out.println("added user to map");
+					nextLobby++; //TODO should this change so if a lobby closes, the key can be re-used? Otherwise key will keep increasing, new values might require new buckets in HashMap?
 				}
-			//TODO temp code until lobbies implemented
-				if (users[1] != null)
-					isRunning = false;
+				nextConn++;
+				newUser = null;
+				newLobby = null;
 			}
 		} catch (IOException e) {
 			System.err.println("Could not use port " + PORT);
@@ -72,54 +87,11 @@ public class FakeServer extends Thread implements Runnable {
 		input = new ObjectInputStream(s.getInputStream());
 	}
 	
-	public static boolean getBattleStarted() {
-		return battleStarted;
+	public static FakeLobby getLobby(int key) {
+		return lobbyMap.get(key);
 	}
-	
-	public static boolean getTurnProcessed() {
-		return turnProcessed;
-	}
-	
-	public static Monster[] getReturnArray() {
-		return returnArray;
-	}
-	
+
 	public static void main(String[] args) throws IOException, InterruptedException {
 		new FakeServer();
-		
-		while (!battleStarted) {
-			try {
-				Thread.sleep(200);
-			} catch (InterruptedException e) {}
-			boolean starting = FakeServer.fsp.manageStartup();
-			if (starting == true) {
-				battleStarted = true;
-				synchronized (lock) {
-					lock.notifyAll();
-				}
-			}
-		}
-		//TODO look into event queues so this can be synced with both UserThreads without messing up
-		// ie receiving both notify messages before second lock
-		while (!gameOver) {
-			System.out.println("starting round");
-			turnsReady = false;
-			turnProcessed = false;
-			do {
-				Thread.sleep(200);
-				returnArray = fsp.runBattle();
-				if (fsp.getTurnsReady() == 2) {
-					turnsReady = true;
-				}
-			} while (!turnsReady);
-			
-			returnArray = fsp.runBattle();
-			fsp.resetTurns();
-			turnProcessed = true;
-
-			synchronized (lock) {
-				lock.notifyAll();
-			}
-		}
 	}
 }

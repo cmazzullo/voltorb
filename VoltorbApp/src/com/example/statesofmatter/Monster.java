@@ -210,12 +210,24 @@ public class Monster implements MonsterInterface, Serializable {
     //beginning of each turn
     public void resolveStatus() {
     	//TODO count down status timer, see if monster shakes it off
+    	switch (status) {
+    		case PARALYSIS:
+    			break;
+    		case POISON:
+    			break;
+    		case SLEEP:
+    			break;
+    		case NORMAL:
+    			break;
+    	}
+    	
+    	//TODO if status still not normal, use held item to cure if available
     	if (status != Status.NORMAL) {
     		for (int i=0; i<equipment.length; i++) {
-    			//if (currentEquip[i].getType() == Item.CURE && 
-    				//currentEquip[i].getCureType == currentStatus.getStatus()) {
+    			if (equipment[i].getItemType() == ItemType.CURE && 
+    				equipment[i].getCureType() == status) {
     				//this.useItem(currentEquip[i];
-    			//}
+    			}
     		}
     	}
     }
