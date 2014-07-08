@@ -135,10 +135,9 @@ public class UserThread extends Thread {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.err.println("Player disconnected");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
-			//TODO lobby needs to close on player disconnect, probably handle in lobby class
 		} finally {
 			try {
 				if (playerReady)
@@ -149,13 +148,13 @@ public class UserThread extends Thread {
 					output.close();
 				if (input != null)
 					input.close();
-				FakeServer.getLobby(lobbyNum).getUserThread()[playerNum] = null;
 				if (playerSocket != null)
 					playerSocket.close();
-				System.out.println("Player disconnected");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+				FakeServer.getLobby(lobbyNum).getUserThread()[playerNum] = null;
+				FakeServer.getLobby(lobbyNum).interrupt();
+				FakeServer.decConnNum();
+				FakeServer.connUsers.remove(this);
+			} catch (IOException e) { }
 		}
 	}
 }

@@ -67,43 +67,50 @@ public class FakeLobby extends Thread {
 	
 	@Override
 	public void run() {
-		while (!battleStarted) {
-			try {
-				Thread.sleep(200);
-			} catch (InterruptedException e) {}
-			if (fsp.manageStartup() == true) {
-				battleStarted = true;
+		try {
+			while (!battleStarted) {
+				if (isInterrupted())
+					throw new InterruptedException();
+				Thread.sleep(200); // TODO try lock here, but see below todo
+				if (fsp.manageStartup() == true) {
+					battleStarted = true;
+					synchronized (lock) {
+						lock.notifyAll();
+					}
+				}
+			}
+			//TODO look into event queues so this can be synced with both UserThreads without messing up
+			// ie receiving both notify messages before second lock
+			while (!gameOver) {
+				if (isInterrupted())
+					throw new InterruptedException();
+				System.out.println("starting round");
+				turnsReady = false;
+				turnProcessed = false;
+				do {
+					Thread.sleep(200); //TODO try another lock here, but see above todo
+					returnArray = fsp.runBattle();
+					if (fsp.getTurnsReady() == 2) {
+						turnsReady = true;
+					}
+				} while (!turnsReady);
+			
+				returnArray = fsp.runBattle();
+				fsp.resetTurns();
+				turnProcessed = true;
+
 				synchronized (lock) {
 					lock.notifyAll();
 				}
 			}
-		}
-		//TODO look into event queues so this can be synced with both UserThreads without messing up
-		// ie receiving both notify messages before second lock
-		while (!gameOver) {
-			System.out.println("starting round");
-			turnsReady = false;
-			turnProcessed = false;
-			do {
-				try {
-					Thread.sleep(200);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+		} catch (InterruptedException e) {
+		} finally { // TODO figure out how to make sure this code only occurs when external interruption occurs, not from Thread.sleep()
+			for (UserThread ut : players) {
+				if (ut != null) {
+					ut.setLobbyNum(-1);
+					ut.setInLobby(false);
 				}
-				returnArray = fsp.runBattle();
-				if (fsp.getTurnsReady() == 2) {
-					turnsReady = true;
-				}
-			} while (!turnsReady);
-			
-			returnArray = fsp.runBattle();
-			fsp.resetTurns();
-			turnProcessed = true;
-
-			synchronized (lock) {
-				lock.notifyAll();
 			}
 		}
 	}
-
 }

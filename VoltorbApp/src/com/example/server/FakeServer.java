@@ -13,8 +13,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import com.example.statesofmatter.Monster;
-
 import android.annotation.TargetApi;
 
 @TargetApi(19)
@@ -29,9 +27,8 @@ public class FakeServer extends Thread implements Runnable {
 	private ObjectInputStream input;
 	private ObjectOutputStream output;
 	static List<UserThread> connUsers = Collections.synchronizedList(new ArrayList<UserThread>());
-	static List<FakeLobby> lobbies = new ArrayList<FakeLobby>();
 	static HashMap<Integer, FakeLobby> lobbyMap = new HashMap<Integer, FakeLobby>();
-	private int nextConn;
+	private static int nextConn;
 	private int nextLobby;
 	
 	
@@ -69,7 +66,8 @@ public class FakeServer extends Thread implements Runnable {
 					System.out.println("added user to map");
 					nextLobby++; //TODO should this change so if a lobby closes, the key can be re-used? Otherwise key will keep increasing, new values might require new buckets in HashMap?
 				}
-				nextConn++;
+				System.out.println(lobbyMap.size());
+				incConnNum();
 				newUser = null;
 				newLobby = null;
 			}
@@ -89,6 +87,14 @@ public class FakeServer extends Thread implements Runnable {
 	
 	public static FakeLobby getLobby(int key) {
 		return lobbyMap.get(key);
+	}
+	
+	public static void decConnNum() {
+		nextConn--;
+	}
+	
+	public static void incConnNum() {
+		nextConn++;
 	}
 
 	public static void main(String[] args) throws IOException, InterruptedException {
