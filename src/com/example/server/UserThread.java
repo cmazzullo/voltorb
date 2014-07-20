@@ -12,6 +12,7 @@ import java.net.Socket;
 import com.example.statesofmatter.Monster;
 import com.example.statesofmatter.Player;
 import com.example.statesofmatter.Turn;
+import com.example.statesofmatter.TurnReturn;
 
 public class UserThread extends Thread {
 	private static Socket playerSocket;
@@ -19,7 +20,7 @@ public class UserThread extends Thread {
 	private ObjectOutputStream output;
 	private ObjectInputStream input;
 	
-	private int playerNum;
+	private int playerNum = -1;
 	private boolean inLobby;
 	private int lobbyNum = -1;
 	private Player player;
@@ -28,6 +29,8 @@ public class UserThread extends Thread {
 	
 	private boolean playerReady = false;
 	private boolean gameOver = false;
+
+	private Object userLock;
 	
 	public UserThread(ObjectOutputStream out, ObjectInputStream in) {
 		this.output = out;
@@ -67,9 +70,21 @@ public class UserThread extends Thread {
 		return currentTurn;
 	}
 	
+	public Object getUserLock() {
+		return userLock;
+	}
+	
 	public void run() {
 		Object o;
 		try {
+			do {
+				synchronized (userLock) {
+					userLock.wait();
+				}
+			} while (!inLobby);
+			
+			System.out.println("num is " + playerNum + " lobby num is " + lobbyNum + " inLobby is " + inLobby);
+			output.writeUnshared(playerNum);
 			while (!playerReady) {
 				if ((o = input.readUnshared()) != null && (Boolean)o == true) {
 					player = (Player)input.readUnshared();
@@ -102,7 +117,7 @@ public class UserThread extends Thread {
 			output.writeUnshared((Boolean)FakeServer.getLobby(lobbyNum).getBattleStarted());
 			output.writeUnshared((Monster)oppLead);
 			System.out.println("Print me when everyone's ready to battle!");
-			Monster[] returnArray;
+			TurnReturn returnData;
 			
 			while (!gameOver) {
 				o = input.readUnshared();
@@ -113,30 +128,50 @@ public class UserThread extends Thread {
 					while (!FakeServer.getLobby(lobbyNum).getTurnProcessed()) {
 						synchronized (FakeServer.getLobby(lobbyNum).getLock()) {
 							try {
+								//TODO condition for if lobby returns mid-turn TurnReturn
+								if (FakeServer.getLobby(lobbyNum).getTurnReturn() != null &&
+									FakeServer.getLobby(lobbyNum).getTurnReturn().getTurnFinished() == 1) {
+									returnData = FakeServer.getLobby(lobbyNum).getTurnReturn();
+									if (playerNum == 0) {
+										player.setLead(returnData.getLeads()[0]);
+										oppLead = returnData.getLeads()[1];
+										output.writeUnshared(returnData);
+									} else if (playerNum == 1) {
+										player.setLead(returnData.getLeads()[1]);
+										oppLead = returnData.getLeads()[0];
+										output.writeUnshared(returnData);
+									}
+									o = input.readUnshared();
+									if ((Turn)o != null) {
+										currentTurn = (Turn)o;
+										FakeServer.getLobby(lobbyNum).getProtocol().incTurns();
+									}
+								}
 								FakeServer.getLobby(lobbyNum).getLock().wait();
 							} catch (InterruptedException e) {
 								e.printStackTrace();
 							}
 						}
 					}
-					returnArray = FakeServer.getLobby(lobbyNum).getReturnArray();
+					returnData = FakeServer.getLobby(lobbyNum).getTurnReturn();
 					currentTurn = null;
 					if (playerNum == 0) {
-						player.setLead(returnArray[0]);
-						output.writeUnshared(player.getLead());
-						oppLead = returnArray[1];
-						output.writeUnshared(oppLead);
+						player.setLead(returnData.getLeads()[0]);
+						oppLead = returnData.getLeads()[1];
+						output.writeUnshared(returnData);
 					} else if (playerNum == 1) {
-						player.setLead(returnArray[1]);
-						output.writeUnshared(player.getLead());
-						oppLead = returnArray[0];
-						output.writeUnshared(oppLead);
+						returnData.setLeads(new Monster[] { returnData.getLeads()[1], returnData.getLeads()[0] });
+						player.setLead(returnData.getLeads()[0]);
+						oppLead = returnData.getLeads()[1];
+						output.writeUnshared(returnData);
 					}	
 				}
 			}
 		} catch (IOException e) {
 			System.err.println("Player disconnected");
 		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} finally {
 			try {

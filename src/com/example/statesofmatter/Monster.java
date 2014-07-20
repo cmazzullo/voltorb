@@ -226,7 +226,7 @@ public class Monster implements MonsterInterface, Serializable {
     		for (int i=0; i<equipment.length; i++) {
     			if (equipment[i].getItemType() == ItemType.CURE && 
     				equipment[i].getCureType() == status) {
-    				//this.useItem(currentEquip[i];
+    				//this.useItem(equipment[i];
     			}
     		}
     	}

@@ -2,6 +2,7 @@
 package com.example.server;
 
 import com.example.statesofmatter.Monster;
+import com.example.statesofmatter.TurnReturn;
 
 public class FakeLobby extends Thread {
 	
@@ -15,7 +16,7 @@ public class FakeLobby extends Thread {
 	private boolean gameOver;
 	private boolean turnsReady;
 	private boolean turnProcessed;
-	private Monster[] returnArray;
+	private TurnReturn returnData;
 	
 	private Object lock = new Object();
 	
@@ -61,8 +62,8 @@ public class FakeLobby extends Thread {
 		return turnProcessed;
 	}
 	
-	public Monster[] getReturnArray() {
-		return returnArray;
+	public TurnReturn getTurnReturn() {
+		return returnData;
 	}
 	
 	@Override
@@ -89,19 +90,43 @@ public class FakeLobby extends Thread {
 				turnProcessed = false;
 				do {
 					Thread.sleep(200); //TODO try another lock here, but see above todo
-					returnArray = fsp.runBattle();
+					fsp.runBattle(); //removed returnData =; should still work correctly
 					if (fsp.getTurnsReady() == 2) {
 						turnsReady = true;
 					}
 				} while (!turnsReady);
 			
-				returnArray = fsp.runBattle();
-				fsp.resetTurns();
-				turnProcessed = true;
+				returnData = fsp.runBattle();
+				//TODO handle mid-turn return
+				do {
+					if (returnData.getTurnFinished() < 2) {
+						//interrupt UserThread lock
+						fsp.resetTurns();
+						turnsReady = false;
+						synchronized (lock) {
+							lock.notifyAll();
+						}
+						do {
+							Thread.sleep(200);
+							fsp.runBattle();
+							if ((fsp.getTurnsReady() == 1 && (returnData.getFainted() == 1 ||
+								returnData.getFainted() == 2)) || (fsp.getTurnsReady() == 2 &&
+								returnData.getFainted() == 3)) {
+								turnsReady = true;
+							}
+						} while (!turnsReady);
+						
+						returnData = fsp.runBattle();
+						
+					} else {
+						fsp.resetTurns();
+						turnProcessed = true;
 
-				synchronized (lock) {
-					lock.notifyAll();
-				}
+						synchronized (lock) {
+							lock.notifyAll();
+						}
+					}
+				} while (!turnProcessed);
 			}
 		} catch (InterruptedException e) {
 		} finally { // TODO figure out how to make sure this code only occurs when external interruption occurs, not from Thread.sleep()
