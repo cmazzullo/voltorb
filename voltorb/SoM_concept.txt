@@ -1,0 +1,115 @@
+****turn based rpg*****
+
+element:
+Fire
+Water
+Air
+Earth
+Dark
+Light
+
+states:
+Solid
+Liquid
+Gas
+Plasma
+
+weakness/strength:
+---> beats
+~~~> doesnt affect
+///> resisted by
+
+Water ---> Fire ---> Air ---> Earth ---> Water
+Light <---> Dark
+Fire ---> Dark
+Fire ~~~> Light
+Dark ///> Fire
+Fire ///> Water
+Air ///> Earth
+Earth ///> Water
+
+Plasma <---> Liquid
+Plasma ///> Gas
+Liquid ///> Solid
+
+**Alternative idea:
+States do not work like elements, providing bonuses and weaknesses to other states.
+States are modifiers that monsters can acquire by transforming into a particular 
+state, perhaps once they've filled a meter to initiate a transformation. When a 
+monster possesses a particular state template, their strengths and weaknesses
+relative to other elements do not change. HOWEVER, what changing states does do
+is alter their stats in some fashion, in addition to modifying their attacks, or
+even giving them new ones entirely. 
+
+Example 1: An Air-type alters itself to the Gas state. Its agility, intellectual 
+strength, and physical endurance go up, while its vitality and spiritual strength
+go down. Attacks remain the same, damage increases because of type reinforcement.
+
+Example 2: A light-type alters itself to the Liquid state. Its vitality, physical 
+strength, and physical endurance go up, while its agility and intellectual strength
+go down. Some of its attacks change, focusing more around illusions and attacks that
+cause disorientation-style status effects, maybe creating a chance for an opponent
+to hurt themselves.
+
+Example 3: An Earth-type alters itself to the Liquid state. Same stat changes as in
+Example 2. It's attacks do less damage, but they cause effects like reducing enemies'
+agility and physical endurance.
+
+Plasma works differently. It's frickin' plasma, so it's the most destructive state.
+It requires a fuller meter to change into it. It provides a stronger suite of attacks
+dependent on element, and strengths all go up. However, it can only be maintained 
+for a limited amount of time, they can't be switched out, they can't use items (are 
+there going to be items?) and they take some damage each turn they are in the state.
+They're sort of a glass cannon, best reserved for when you think you can take your
+opponent down quickly.
+
+-Jim**
+
+stats:
+
+Vitality: health
+Physical Strength: physical attack
+Spiritual Strength: spirit attack
+Intellecual Strength: intellect attack
+Agility: speed
+Physical Endurance: physical defense
+Spiritual Endurance: spirit defense
+Intellectual Endurance: intellect defense
+
+Physical Strength ===> Spiritual Endurance
+Spritual Strength ===> Intellectual Endurance
+Intellectual Strength ===> Physical Endurance
+
+**Just make them correspond normally to avoid confusion. KISS. -Jim**
+
+damage = health - ((strength-endurance)*element*state*)
+.05% chance of critical hit which will double damage
+
+**Alternative for damage:
+Make damage a range, to add a small element of chance. A set of equations calculates
+the min and max values of a damage range instead of a single value. As strength 
+increase, the min and max values increase together, and SLOWLY diverge from each other
+(maybe to a maximum range limit).This is modified by the attacking power of the 
+specific attack being used. (This is done here in case we want to make attacks that 
+alter the base range.) A random value is picked from this range and put into the above
+equation.
+
+Taking into account the alternative model for States, the final equation is:
+damage = health - ((calculated damage - endurance) * element)
+
+***Actually, should probably incorporate endurance as a ratio with strength to avoid 
+having to deal with negative damages.***
+
+Status effect duration should be determined by a percentage chance to throw it off each 
+round. This chance increases every round, linearly, until it reaches 100%. It always 
+starts at 0% for the first turn.
+
+-Jim**
+
+**When applying status effects, the rate of increase of a monster's chance to throw off a
+status effect depends on some equation that uses the relative values of the appropriate 
+Strength of the attacker and Endurance of the attacked. So with poison, for instance, 
+Physical Strength is compared to Physical Endurance to determine how quickly the attacked
+monster's chance to throw off the effect increases. 
+
+-Jim **

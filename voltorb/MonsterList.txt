@@ -1,0 +1,4 @@
+Pidgey;AIR;Tickle,Chirp,Flap;10;9;8;7;6;5;4;3;Health Potion,Mind Shield
+Voltorb;AIR,FIRE;Zap,Explode;20;19;18;17;16;15;14;13; 
+Bob;EARTH;Make Latte,See Psychiatrist,Stare Blankly,Get Fired;2;2;2;2;2;2;2;2;Cure Poison
+Magikarp;WATER;Splash;5;5;5;5;5;5;5;5; 

@@ -1,0 +1,3 @@
+Health Potion;HEAL;50
+Cure Poison;CURE;POISON
+Mind Shield;ARMOR
