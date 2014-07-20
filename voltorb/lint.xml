@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<lint>
-    <issue id="DefaultLocale">
-        <ignore path="src/com/example/statesofmatter/Attack.java" />
-        <ignore path="src/com/example/statesofmatter/Item.java" />
-        <ignore path="src/com/example/statesofmatter/Monster.java" />
-        <ignore path="src/com/example/statesofmatter/Turn.java" />
-    </issue>
-</lint>
