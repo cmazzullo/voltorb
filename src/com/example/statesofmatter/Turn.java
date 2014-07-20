@@ -8,7 +8,7 @@ package com.example.statesofmatter;
 
 import java.io.Serializable;
 
-public class Turn implements TurnInterface, Serializable {
+public class Turn implements Serializable {
 
     private PlayerAction action;
     private int argument;

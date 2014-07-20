@@ -3,7 +3,7 @@ package com.example.statesofmatter;
 import java.io.Serializable;
 
 
-public class Attack implements AttackInterface, Serializable {
+public class Attack implements Serializable {
 
     private String name;
     private Element element;

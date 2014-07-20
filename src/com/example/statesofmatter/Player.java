@@ -3,7 +3,7 @@ package com.example.statesofmatter;
 import java.io.Serializable;
 import java.util.Arrays;
 
-public class Player implements PlayerInterface, Serializable {
+public class Player implements Serializable {
 
     private String name;
     private String ID;//get from Android phone

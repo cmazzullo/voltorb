@@ -7,7 +7,7 @@ package com.example.statesofmatter;
 import java.io.Serializable;
 import java.util.Arrays;
 
-public class Monster implements MonsterInterface, Serializable {
+public class Monster implements Serializable {
 
     // Stats that change
     private int currentHP;
