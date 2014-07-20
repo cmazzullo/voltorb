@@ -30,7 +30,7 @@ public class UserThread extends Thread {
 	private boolean playerReady = false;
 	private boolean gameOver = false;
 
-	private Object userLock;
+	private Object userLock = new Object();
 	
 	public UserThread(ObjectOutputStream out, ObjectInputStream in) {
 		this.output = out;

@@ -59,15 +59,15 @@ public class FakeServer extends Thread implements Runnable {
 					System.out.println("added user to lobby");
 					lobbyMap.put(nextLobby, newLobby);
 					synchronized (newLobby.getUserThread()[0].getUserLock()) {
-						newUser.getUserLock().notify();
+						newLobby.getUserThread()[0].getUserLock().notify();
 					}
 					System.out.println("put lobby in map");
 				} else {
 					newUser.setInLobby(true);
 					newUser.setLobbyNum(nextLobby);
 					lobbyMap.get(nextLobby).addPlayer(newUser);
-					synchronized (newUser.getUserLock()) {
-						newUser.getUserLock().notify();
+					synchronized (lobbyMap.get(nextLobby).getUserThread()[1].getUserLock()) {
+						lobbyMap.get(nextLobby).getUserThread()[1].getUserLock().notify();
 					}
 					System.out.println("added user to map");
 					nextLobby++; //TODO should this change so if a lobby closes, the key can be re-used? Otherwise key will keep increasing, new values might require new buckets in HashMap?
