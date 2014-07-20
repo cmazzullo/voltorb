@@ -16,7 +16,7 @@ public class Turn implements TurnInterface, Serializable {
     
     public Turn() {}
     
-    public Turn (PlayerAction action, int argument, State state) { //TODO: include state as arg since state can be set in same turn as a move
+    public Turn (PlayerAction action, int argument, State state) {
     	this.action = action;
     	this.argument = argument;
     	this.state = state;

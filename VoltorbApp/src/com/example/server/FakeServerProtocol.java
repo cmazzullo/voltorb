@@ -10,6 +10,7 @@ import com.example.statesofmatter.Monster;
 import com.example.statesofmatter.PlayerAction;
 import com.example.statesofmatter.Status;
 import com.example.statesofmatter.Turn;
+import com.example.statesofmatter.TurnReturn;
 
 public class FakeServerProtocol {
 	private final int NOT_FULL = 0;
@@ -17,6 +18,7 @@ public class FakeServerProtocol {
 	private final int LOBBY_READY = 2;
 	private final int TURN_WAITING = 3;
 	private final int TURNS_READY = 4;
+	private final int PLAYER_FAINTED = 5;
 	
 	private int lobbyNum = -1;
 	
@@ -85,35 +87,57 @@ public class FakeServerProtocol {
 		return false;
 	}
 	
-	public Monster[] runBattle() {
+	public TurnReturn runBattle() {
 		
 		if (gameState == TURN_WAITING) {
 			if (turnsReady == 2)
 				gameState = 4;
 		} else if (gameState == TURNS_READY) {
-			Monster[] returnArray;
-			returnArray = executeTurns(FakeServer.getLobby(lobbyNum).getUserThread()[0].getTurn(), 
+			TurnReturn returnData = new TurnReturn();
+			boolean p1First = battleOrder(FakeServer.getLobby(lobbyNum).getUserThread()[0].getTurn(), 
 					FakeServer.getLobby(lobbyNum).getUserThread()[0].getPlayer().getLead(),
 					FakeServer.getLobby(lobbyNum).getUserThread()[1].getTurn(), 
 					FakeServer.getLobby(lobbyNum).getUserThread()[1].getPlayer().getLead());
-			gameState = 3;
-			return returnArray;
+			returnData = executeTurns(p1First, FakeServer.getLobby(lobbyNum).getUserThread()[0].getTurn(), 
+					FakeServer.getLobby(lobbyNum).getUserThread()[0].getPlayer().getLead(),
+					FakeServer.getLobby(lobbyNum).getUserThread()[1].getTurn(), 
+					FakeServer.getLobby(lobbyNum).getUserThread()[1].getPlayer().getLead(),
+					returnData);
+			if (returnData.getTurnFinished() == 2)
+				gameState = 3;
+			else
+				gameState = 5;
+			return returnData;
+		} else if (gameState == PLAYER_FAINTED) {
+			TurnReturn returnData = new TurnReturn();
+			
 		}
 		return null;
 	}	
 	
-	private Monster[] executeTurns(Turn p1Turn, Monster p1Lead, Turn p2Turn, Monster p2Lead) {
-		boolean p1First = battleOrder(p1Turn, p1Lead, p2Turn, p2Lead);
+	private TurnReturn executeTurns(boolean p1First, Turn p1Turn, Monster p1Lead, Turn p2Turn, Monster p2Lead, TurnReturn returnData) {
 
 		if (p1First) {
-			Monster[] turnOne = doTurn(0, 1, p1Turn, p1Lead, p2Lead);
-			Monster[] turnTwo = doTurn(1, 0, p2Turn, turnOne[1], turnOne[0]);
-
-			return new Monster[] { turnTwo[1], turnTwo[0] }; 
+			returnData = doTurn(0, 1, p1Turn, p1Lead, p2Lead, returnData);
+			if (returnData.getFainted() == 0) {
+				returnData = doTurn(1, 0, p2Turn, returnData.getLeads()[1], returnData.getLeads()[0], returnData);
+				if (returnData.getFainted() == 0)
+					returnData.setTurnFinished(2);
+				else
+					returnData.setTurnFinished(1);
+			}
+			returnData.setLeads(new Monster[] { returnData.getLeads()[1], returnData.getLeads()[0] });
+			return returnData; 
 		} else {
-			Monster[] turnOne = doTurn(1, 0, p2Turn, p2Lead, p1Lead);
-			Monster[] endTurn = doTurn(0, 1, p1Turn, turnOne[1], turnOne[0]);
-			return endTurn;
+			returnData = doTurn(1, 0, p2Turn, p2Lead, p1Lead, returnData);
+			if (returnData.getFainted() == 0) {
+				returnData = doTurn(0, 1, p1Turn, returnData.getLeads()[1], returnData.getLeads()[0], returnData);
+				if (returnData.getFainted() == 0)
+					returnData.setTurnFinished(2);
+				else
+					returnData.setTurnFinished(1);
+			}
+			return returnData;
 		}
 	}
 	
@@ -156,10 +180,11 @@ public class FakeServerProtocol {
 	}
 	
 	// TODO may or may not need p2Num
-	private Monster[] doTurn(int actPlayer, int recPlayer, Turn playerTurn, Monster actLead, Monster recLead) {
+	private TurnReturn doTurn(int actPlayer, int recPlayer, Turn playerTurn, Monster actLead, Monster recLead, TurnReturn returnData) {
 		if (playerTurn.getAction() == PlayerAction.SWITCH) {
 			actLead = FakeServer.getLobby(lobbyNum).getUserThread()[actPlayer].getPlayer().getTeam()[playerTurn.getArgument()];
-			return new Monster[] { actLead, recLead };	
+			returnData.setLeads(new Monster[] {actLead, recLead});
+			return returnData;
 		} else {
 			if (actLead.getStatus() != Status.NORMAL || 
 				actLead.getBuffDebuff() != BuffDebuff.NONE) {
@@ -175,7 +200,7 @@ public class FakeServerProtocol {
 						break;
 					case PARALYSIS:
 						break;
-					}
+					}//TODO communicate (through TurnReturn) whether a status effect did something to player
 			}	
 			if (playerTurn.getState() != FakeServer.getLobby(lobbyNum).getUserThread()[actPlayer].getPlayer().getLead().getState()) {
 				FakeServer.getLobby(lobbyNum).getUserThread()[actPlayer].getPlayer().getLead().setState(playerTurn.getState());
@@ -183,17 +208,49 @@ public class FakeServerProtocol {
 			if (playerTurn.getAction() == PlayerAction.ATTACK) {
 				//do damage to receivingLead
 				Attack attack = actLead.getAttacks()[playerTurn.getArgument()];
-				attack.applyAttack(actLead, recLead); //TODO apply attack needs to return monster objects
+				attack.applyAttack(actLead, recLead);
 				
 				if (!recLead.isFainted()) {
 					//apply status/debuffs from attack
 				//apply buffs from attack to self
 				}
-				//System.out.println(user + ":" + receivingLead.getHP());
-				return new Monster[] { actLead, recLead };
+				//apply post-turn damage status
+				if (actLead.isFainted() && recLead.isFainted())
+					returnData.setFainted(3);
+				else if (actLead.isFainted()) {
+					if (actPlayer == 0)
+						returnData.setFainted(1);
+					else
+						returnData.setFainted(2);
+				} else if (recLead.isFainted()) {
+					if (actPlayer == 0)
+						returnData.setFainted(1);
+					else
+						returnData.setFainted(2);
+				}
+				
+				returnData.setLeads(new Monster[] {actLead, recLead});
+				return returnData;
 			} else {//if (player.getAction() == PlayerAction.ITEM) {
 				//apply item effect
-				return new Monster[] { actLead, recLead };
+				
+				//apply post-turn damage status
+				if (actLead.isFainted() && recLead.isFainted())
+					returnData.setFainted(3);
+				else if (actLead.isFainted()) {
+					if (actPlayer == 0)
+						returnData.setFainted(1);
+					else
+						returnData.setFainted(2);
+				} else if (recLead.isFainted()) {
+					if (actPlayer == 0)
+						returnData.setFainted(1);
+					else
+						returnData.setFainted(2);
+				}
+				
+				returnData.setLeads(new Monster[] {actLead, recLead});
+				return returnData;
 			}
 		}
 		// TODO STATE_SHIFT, ATTACK, ITEM, PASS

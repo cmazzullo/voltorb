@@ -30,11 +30,13 @@ public class LocalGameRunner implements Runnable {
 	private Database d;
 	private String playerID;
 	private String playerName;
+	private int playerNum = -1;
 	private Player player;
 	private Monster oppLead;
 	private PlayerAction action = PlayerAction.PASS;
 	private int argument;
 	private State turnState;
+	private TurnReturn returnData = new TurnReturn();
 	
 	
 	public Database getDbase() {
@@ -166,13 +168,17 @@ public class LocalGameRunner implements Runnable {
 			System.out.println("Connected");
 			setupStreams(playerSocket);
 			System.out.println("Streams established");
+			playerNum = (Integer)input.readUnshared();
+			System.out.println(playerNum);
     	} catch (UnknownHostException e) {
             System.err.println("Unknown host " + host);
             System.exit(1);
         } catch (IOException e) {
             System.err.println("Couldn't get I/O for connection to " + host);
             System.exit(1);
-        }
+        } catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void setupStreams(Socket s) throws IOException {
@@ -219,15 +225,15 @@ public class LocalGameRunner implements Runnable {
 						}
 					}
 					Thread.sleep(100);
-				System.out.println("escaped gamerunnner lock");
 				} while (turnReady);
 				
 				System.out.println("turn set to ready");
 				Turn turn = new Turn(action, argument, turnState);
 				output.writeUnshared(turn);
 				System.out.println("wrote the turn");
-				player.setLead((Monster)input.readUnshared());
-				oppLead = (Monster)input.readUnshared();
+				returnData = (TurnReturn)input.readUnshared();
+				player.setLead(returnData.getLeads()[0]);
+				oppLead = returnData.getLeads()[1];
 				System.out.println(player.getLead().getHP());
 				System.out.println(oppLead.getHP());
 				turnReady = true;
