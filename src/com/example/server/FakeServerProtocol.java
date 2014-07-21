@@ -17,8 +17,8 @@ public class FakeServerProtocol {
 	private final int LOBBY_FULL = 1;
 	private final int LOBBY_READY = 2;
 	private final int TURN_WAITING = 3;
-	private final int TURNS_READY = 4;
-	private final int PLAYER_FAINTED = 5;
+	private final int INITIAL_TURN = 4;
+	private final int FAINTED_TURN = 5;
 	
 	private int lobbyNum = -1;
 	
@@ -92,7 +92,7 @@ public class FakeServerProtocol {
 		if (gameState == TURN_WAITING) {
 			if (turnsReady == 2)
 				gameState = 4;
-		} else if (gameState == TURNS_READY) {
+		} else if (gameState == INITIAL_TURN) {
 			TurnReturn returnData = new TurnReturn();
 			boolean p1First = battleOrder(FakeServer.getLobby(lobbyNum).getUserThread()[0].getTurn(), 
 					FakeServer.getLobby(lobbyNum).getUserThread()[0].getPlayer().getLead(),
@@ -108,7 +108,7 @@ public class FakeServerProtocol {
 			else
 				gameState = 5;
 			return returnData;
-		} else if (gameState == PLAYER_FAINTED) {
+		} else if (gameState == FAINTED_TURN) {
 			TurnReturn returnData = new TurnReturn();
 			
 		}
@@ -126,7 +126,7 @@ public class FakeServerProtocol {
 				else
 					returnData.setTurnFinished(1);
 			}
-			returnData.setLeads(new Monster[] { returnData.getLeads()[1], returnData.getLeads()[0] });
+			returnData.setLeads(new Monster[] { returnData.getLeads()[1], returnData.getLeads()[0] }); //TODO swaps leads incorrectly if getfainted != 0
 			return returnData; 
 		} else {
 			returnData = doTurn(1, 0, p2Turn, p2Lead, p1Lead, returnData);

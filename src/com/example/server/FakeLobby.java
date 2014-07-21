@@ -97,8 +97,14 @@ public class FakeLobby extends Thread {
 				} while (!turnsReady);
 			
 				returnData = fsp.runBattle();
+				fsp.resetTurns();
+				turnProcessed = true;
+				System.out.println(returnData);
+				synchronized (lock) {
+					lock.notifyAll();
+				}
 				//TODO handle mid-turn return
-				do {
+				/*do {
 					if (returnData.getTurnFinished() < 2) {
 						//interrupt UserThread lock
 						fsp.resetTurns();
@@ -126,7 +132,7 @@ public class FakeLobby extends Thread {
 							lock.notifyAll();
 						}
 					}
-				} while (!turnProcessed);
+				} while (!turnProcessed);*/
 			}
 		} catch (InterruptedException e) {
 		} finally { // TODO figure out how to make sure this code only occurs when external interruption occurs, not from Thread.sleep()

@@ -216,26 +216,42 @@ public class LocalGameRunner implements Runnable {
 		
 			while (!gameOver) {
 				System.out.println(player.getLead().getHP() + " : " + oppLead.getHP());
-				do {
-					synchronized (lock) {
-						try {
-							lock.wait();
-						} catch (InterruptedException e) {
-							e.printStackTrace();
+				if (returnData.getTurnFinished() == 0 || 
+						(returnData.getTurnFinished() == 1 && 
+						(returnData.getFainted() == (playerNum + 1) || 
+						returnData.getFainted() == 3))) {
+					do {
+						synchronized (lock) {
+							try {
+								lock.wait();
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
 						}
-					}
-					Thread.sleep(100);
-				} while (turnReady);
-				
-				System.out.println("turn set to ready");
-				Turn turn = new Turn(action, argument, turnState);
-				output.writeUnshared(turn);
+						Thread.sleep(100);
+					} while (turnReady);
+					
+					System.out.println("turn set to ready");
+					Turn turn = new Turn(action, argument, turnState);
+					output.writeUnshared(turn);
+				} else {
+					Turn turn = null;
+					output.writeUnshared(turn);
+				}
 				System.out.println("wrote the turn");
 				returnData = (TurnReturn)input.readUnshared();
-				player.setLead(returnData.getLeads()[0]);
-				oppLead = returnData.getLeads()[1];
-				System.out.println(player.getLead().getHP());
-				System.out.println(oppLead.getHP());
+				if (playerNum == 0) {
+					player.setLead(returnData.getLeads()[0]);
+					oppLead = returnData.getLeads()[1];
+				} else {
+					player.setLead(returnData.getLeads()[1]);
+					oppLead = returnData.getLeads()[0];
+				}
+				//System.out.println(player.getLead().getHP());
+				//System.out.println(oppLead.getHP());
+				//System.out.println(returnData.getTurnFinished());
+				System.out.println(returnData);
+				returnData = new TurnReturn();
 				turnReady = true;
 			}
 			
