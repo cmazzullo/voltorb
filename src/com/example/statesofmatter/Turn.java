@@ -13,13 +13,15 @@ public class Turn implements Serializable {
     private PlayerAction action;
     private int argument;
     private State state;
+    private boolean completed;
     
     public Turn() {}
     
-    public Turn (PlayerAction action, int argument, State state) {
+    public Turn (PlayerAction action, int argument, State state, boolean completed) {
     	this.action = action;
     	this.argument = argument;
     	this.state = state;
+    	this.completed = completed;
     }
     
     public PlayerAction getAction() {
@@ -32,6 +34,14 @@ public class Turn implements Serializable {
     
     public State getState() {
     	return state;
+    }
+    
+    public boolean isCompleted() {
+    	return completed;
+    }
+    
+    public void setCompleted(boolean completed) {
+    	this.completed = completed;
     }
     
     @Override

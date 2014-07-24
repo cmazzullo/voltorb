@@ -11,3 +11,11 @@ voltorb
   TODO: FakeLobbies and UserThreads do not handle player disconnection yet.
 	If one player disconnects, (for now) lobby should be destroyed and connected
 	player set up with a new lobby for the next connected player to join.
+	
+  BUGS:
+	1. GUI now updates 1 turn late for some reason. Has something to do with how 
+		LocalGameRunner works currently
+	2. When player 2 faints and switches a new monster in, the leads get swapped
+		so player 2's lead is now player 1's lead and presumably vice versa. May 
+		happen in reverse instace. Check FakeServerProtocol (should be continueTurns
+		method) for leads being swapped/not when they shouldn't/should be.

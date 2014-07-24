@@ -117,6 +117,7 @@ public class UserThread extends Thread {
 			output.writeUnshared((Boolean)FakeServer.getLobby(lobbyNum).getBattleStarted());
 			output.writeUnshared((Monster)oppLead);
 			System.out.println("Print me when everyone's ready to battle!");
+			currentTurn = new Turn();
 			TurnReturn returnData;
 			
 			while (!gameOver) {
@@ -166,12 +167,10 @@ public class UserThread extends Thread {
 						output.writeUnshared(returnData);
 					}
 				}*/
-				o = input.readUnshared();
-				if ((Turn)o != null) {
+				if ((Turn)(o = input.readUnshared()) != null)
 					currentTurn = (Turn)o;
-					FakeServer.getLobby(lobbyNum).getProtocol().incTurns();
-				}
-				
+				FakeServer.getLobby(lobbyNum).getProtocol().incTurns();
+				System.out.println("Player " + (playerNum + 1) + " has made their move.");
 				do {
 					synchronized (FakeServer.getLobby(lobbyNum).getLock()) {
 						try {
@@ -212,18 +211,20 @@ public class UserThread extends Thread {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (playerReady)
-					FakeServer.getLobby(lobbyNum).getProtocol().decReady();
-				FakeServer.getLobby(lobbyNum).getProtocol().decConnection();
-				FakeServer.getLobby(lobbyNum).getProtocol().manageStartup();
+				//if (playerReady && lobbyNum != -1);
+					//FakeServer.getLobby(lobbyNum).getProtocol().decReady();
+				//FakeServer.getLobby(lobbyNum).getProtocol().decConnection();
+				//FakeServer.getLobby(lobbyNum).getProtocol().manageStartup();
 				if (output != null)
 					output.close();
 				if (input != null)
 					input.close();
 				if (playerSocket != null)
 					playerSocket.close();
-				FakeServer.getLobby(lobbyNum).getUserThread()[playerNum] = null;
-				FakeServer.getLobby(lobbyNum).interrupt();
+				if (lobbyNum != -1) {
+					FakeServer.getLobby(lobbyNum).getUserThread()[playerNum] = null;
+					FakeServer.getLobby(lobbyNum).interrupt();
+				}
 				FakeServer.decConnNum();
 				FakeServer.connUsers.remove(this);
 			} catch (IOException e) { }

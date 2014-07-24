@@ -47,6 +47,10 @@ public class LocalGameRunner implements Runnable {
 		return player;
 	}
 	
+	public int getPlayerNum() {
+		return playerNum;
+	}
+	
 	public Monster getOppLead() {
 		return oppLead;
 	}
@@ -212,30 +216,32 @@ public class LocalGameRunner implements Runnable {
 				}
 			}
 			System.out.println("Battle started!");
-			turnReady = true;
 		
 			while (!gameOver) {
 				System.out.println(player.getLead().getHP() + " : " + oppLead.getHP());
-				if (returnData.getTurnFinished() == 0 || 
+				if (returnData.getTurnFinished() == 0 || returnData.getTurnFinished() == 2 ||
 						(returnData.getTurnFinished() == 1 && 
 						(returnData.getFainted() == (playerNum + 1) || 
 						returnData.getFainted() == 3))) {
 					do {
 						synchronized (lock) {
 							try {
+								System.out.println("i'm in the lock");
 								lock.wait();
 							} catch (InterruptedException e) {
 								e.printStackTrace();
 							}
 						}
 						Thread.sleep(100);
-					} while (turnReady);
+					} while (!turnReady);
 					
 					System.out.println("turn set to ready");
-					Turn turn = new Turn(action, argument, turnState);
+					returnData = new TurnReturn();
+					Turn turn = new Turn(action, argument, turnState, false);
 					output.writeUnshared(turn);
 				} else {
 					Turn turn = null;
+					returnData = new TurnReturn();
 					output.writeUnshared(turn);
 				}
 				System.out.println("wrote the turn");
@@ -251,8 +257,7 @@ public class LocalGameRunner implements Runnable {
 				//System.out.println(oppLead.getHP());
 				//System.out.println(returnData.getTurnFinished());
 				System.out.println(returnData);
-				returnData = new TurnReturn();
-				turnReady = true;
+				turnReady = false;
 			}
 			
 		} catch (IOException e1) {

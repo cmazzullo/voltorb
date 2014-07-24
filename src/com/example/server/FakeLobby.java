@@ -135,6 +135,9 @@ public class FakeLobby extends Thread {
 				} while (!turnProcessed);*/
 			}
 		} catch (InterruptedException e) {
+		} catch (Exception e) {
+			// TODO super-secret exception for invalid move
+			e.printStackTrace();
 		} finally { // TODO figure out how to make sure this code only occurs when external interruption occurs, not from Thread.sleep()
 			for (UserThread ut : players) {
 				if (ut != null) {
