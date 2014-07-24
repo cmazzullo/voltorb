@@ -141,13 +141,12 @@ public class FakeServerProtocol {
 					returnData.setTurnFinished(2);
 				else
 					returnData.setTurnFinished(1);
-				returnData.setLeads(new Monster[] { returnData.getLeads()[1], returnData.getLeads()[0] });
 			} else
 				returnData.setTurnFinished(1);
 		} else {
 			returnData = doTurn(1, 0, p2Turn, p2Lead, p1Lead, returnData);
 			if (returnData.getFainted() == 0) {
-				returnData = doTurn(0, 1, p1Turn, returnData.getLeads()[1], returnData.getLeads()[0], returnData);
+				returnData = doTurn(0, 1, p1Turn, returnData.getLeads()[0], returnData.getLeads()[1], returnData);
 				if (returnData.getFainted() == 0)
 					returnData.setTurnFinished(2);
 				else
@@ -163,7 +162,6 @@ public class FakeServerProtocol {
 		if (returnData.getFainted() == 3) {
 			returnData = doTurn(0, 1, p1Turn, p1Lead, p2Lead, returnData);
 			returnData = doTurn(1, 0, p2Turn, returnData.getLeads()[1], returnData.getLeads()[0], returnData);
-			returnData.setLeads(new Monster[] { returnData.getLeads()[1], returnData.getLeads()[0] });
 			returnData.setTurnFinished(2);
 		} else if (returnData.getFainted() == 2) {
 			System.out.println("player 2 fainted");
@@ -173,7 +171,7 @@ public class FakeServerProtocol {
 				throw new Exception("That's not a switch!"); //TODO illegal commands need to be caught and dealt with
 			if (p1Turn.isCompleted() == false) {
 				System.out.println("player 1 got to go again");
-				returnData = doTurn(0, 1, p1Turn, returnData.getLeads()[1], returnData.getLeads()[0], returnData);
+				returnData = doTurn(0, 1, p1Turn, returnData.getLeads()[0], returnData.getLeads()[1], returnData);
 			}
 			if (returnData.getFainted() == 0)
 				returnData.setTurnFinished(2);
@@ -192,7 +190,6 @@ public class FakeServerProtocol {
 				returnData.setTurnFinished(2);
 			else
 				returnData.setTurnFinished(1);
-			returnData.setLeads(new Monster[] { returnData.getLeads()[1], returnData.getLeads()[0] });
 		} else
 			System.err.println("If no one fainted, this method should not have been called.");
 		return returnData;
@@ -240,7 +237,6 @@ public class FakeServerProtocol {
 	private TurnReturn doTurn(int actPlayer, int recPlayer, Turn playerTurn, Monster actLead, Monster recLead, TurnReturn returnData) {
 		if (playerTurn.getAction() == PlayerAction.SWITCH) {
 			actLead = FakeServer.getLobby(lobbyNum).getUserThread()[actPlayer].getPlayer().getTeam()[playerTurn.getArgument()];
-			returnData.setLeads(new Monster[] {actLead, recLead});
 			if (returnData.getFainted() == (actPlayer + 1))
 				returnData.setFainted(0);
 			else if (returnData.getFainted() == 3) {
@@ -297,8 +293,6 @@ public class FakeServerProtocol {
 						System.out.println("condition 5");
 						returnData.setFainted(1);}
 				}
-				
-				returnData.setLeads(new Monster[] {actLead, recLead});
 			} else {//if (player.getAction() == PlayerAction.ITEM) {
 				//apply item effect
 				
@@ -316,10 +310,13 @@ public class FakeServerProtocol {
 					else
 						returnData.setFainted(2);
 				}
-				
-				returnData.setLeads(new Monster[] {actLead, recLead});
 			}
 		}
+		
+		if (actPlayer == 0)
+			returnData.setLeads(new Monster[] { actLead, recLead });
+		else if (actPlayer == 1)
+			returnData.setLeads(new Monster[] { recLead, actLead });
 		FakeServer.getLobby(lobbyNum).getUserThread()[actPlayer].getTurn().setCompleted(true);
 		return returnData;
 		// TODO STATE_SHIFT, ATTACK, ITEM, PASS

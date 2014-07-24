@@ -18,7 +18,7 @@ public class LocalGameRunner implements Runnable {
 	
 	private boolean isReady = false;
 	private boolean battleStarted = false;
-	private boolean turnReady = false; //should be set to false once move selected and set back to true once turn is resolved
+	private boolean turnReady = false; //should be set to true once move selected and set back to false once turn is resolved
 	private boolean gameOver = false;
 	
 	public Object lock = new Object();
@@ -253,9 +253,6 @@ public class LocalGameRunner implements Runnable {
 					player.setLead(returnData.getLeads()[1]);
 					oppLead = returnData.getLeads()[0];
 				}
-				//System.out.println(player.getLead().getHP());
-				//System.out.println(oppLead.getHP());
-				//System.out.println(returnData.getTurnFinished());
 				System.out.println(returnData);
 				turnReady = false;
 			}
