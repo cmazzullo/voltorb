@@ -75,13 +75,12 @@ public class Attack implements Serializable {
 	}
 	
 	public void applyAttack(Monster myMonster, Monster oppMonster) {
-		// TODO Auto-generated method stub
 		this.applyDamage(myMonster, oppMonster);
 		if (!oppMonster.isFainted()) {
 			this.applyStatus(oppMonster, stEffect);
 			this.applyDebuff(oppMonster, debEffect);
 		}
-		this.applyBuff(myMonster, bufEffect);
+		this.applyBuff(myMonster, bufEffect); //TODO should only occur after FakeServerProtocol checks if acting player fainted
 	}
 
 	//string methods

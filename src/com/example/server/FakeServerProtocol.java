@@ -158,7 +158,6 @@ public class FakeServerProtocol {
 	}
 	
 	private TurnReturn continueTurns(boolean p1First, Turn p1Turn, Monster p1Lead, Turn p2Turn, Monster p2Lead, TurnReturn returnData) throws Exception {
-		//TODO if p1First?
 		if (returnData.getFainted() == 3) {
 			returnData = doTurn(0, 1, p1Turn, p1Lead, p2Lead, returnData);
 			returnData = doTurn(1, 0, p2Turn, returnData.getLeads()[1], returnData.getLeads()[0], returnData);
@@ -254,7 +253,7 @@ public class FakeServerProtocol {
 				switch (actLead.getStatus()) { //apply status effect if applicable
 					case NORMAL:
 						break;
-					case POISON:
+					case POISON: //TODO POISON should be moved after attack
 						break;
 					case SLEEP:
 						break;
@@ -266,9 +265,12 @@ public class FakeServerProtocol {
 				FakeServer.getLobby(lobbyNum).getUserThread()[actPlayer].getPlayer().getLead().setState(playerTurn.getState());
 			}
 			if (playerTurn.getAction() == PlayerAction.ATTACK) {
-				//do damage to receivingLead
-				Attack attack = actLead.getAttacks()[playerTurn.getArgument()];
-				attack.applyAttack(actLead, recLead);
+				String attackKey = actLead.getAttacks()[playerTurn.getArgument()].getName();
+				Attack attack;
+				try {
+					attack = FakeServer.getDbase().getAttack(attackKey);
+					attack.applyAttack(actLead, recLead);
+				} catch (Exception e) {	}
 				
 				if (!recLead.isFainted()) {
 					//apply status/debuffs from attack
@@ -319,8 +321,8 @@ public class FakeServerProtocol {
 			returnData.setLeads(new Monster[] { recLead, actLead });
 		FakeServer.getLobby(lobbyNum).getUserThread()[actPlayer].getTurn().setCompleted(true);
 		return returnData;
-		// TODO STATE_SHIFT, ATTACK, ITEM, PASS
-		// TODO Doesn't need STATE_SHIFT; PASS either if game async
+		// TODO ITEM, PASS(?)
+		// TODO Doesn't need PASS if game async
 	}
 }
 

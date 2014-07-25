@@ -90,7 +90,7 @@ public class FakeLobby extends Thread {
 				turnProcessed = false;
 				do {
 					Thread.sleep(200); //TODO try another lock here, but see above todo
-					fsp.runBattle(); //removed returnData =; should still work correctly
+					fsp.runBattle();
 					if (fsp.getTurnsReady() == 2) {
 						turnsReady = true;
 					}
@@ -103,36 +103,6 @@ public class FakeLobby extends Thread {
 				synchronized (lock) {
 					lock.notifyAll();
 				}
-				//TODO handle mid-turn return
-				/*do {
-					if (returnData.getTurnFinished() < 2) {
-						//interrupt UserThread lock
-						fsp.resetTurns();
-						turnsReady = false;
-						synchronized (lock) {
-							lock.notifyAll();
-						}
-						do {
-							Thread.sleep(200);
-							fsp.runBattle();
-							if ((fsp.getTurnsReady() == 1 && (returnData.getFainted() == 1 ||
-								returnData.getFainted() == 2)) || (fsp.getTurnsReady() == 2 &&
-								returnData.getFainted() == 3)) {
-								turnsReady = true;
-							}
-						} while (!turnsReady);
-						
-						returnData = fsp.runBattle();
-						
-					} else {
-						fsp.resetTurns();
-						turnProcessed = true;
-
-						synchronized (lock) {
-							lock.notifyAll();
-						}
-					}
-				} while (!turnProcessed);*/
 			}
 		} catch (InterruptedException e) {
 		} catch (Exception e) {

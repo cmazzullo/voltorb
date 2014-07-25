@@ -13,6 +13,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import com.example.statesofmatter.Database;
+
 import android.annotation.TargetApi;
 
 @TargetApi(19)
@@ -21,6 +23,8 @@ public class FakeServer extends Thread implements Runnable {
 	private static ServerSocket serverSocket;
 	private static final int PORT = 4444;
 	private static Socket playerSocket;
+	
+	private static Database d;
 	
 	private static boolean isRunning = false;
 	
@@ -40,6 +44,9 @@ public class FakeServer extends Thread implements Runnable {
 			isRunning = true;
 			UserThread newUser;
 			FakeLobby newLobby;
+			
+			d = new Database();
+			d.getData();
 			
 			while (isRunning) {
 				playerSocket = serverSocket.accept();
@@ -89,6 +96,10 @@ public class FakeServer extends Thread implements Runnable {
 	private void setupStreams(Socket s) throws IOException {
 		output = new ObjectOutputStream(s.getOutputStream());
 		input = new ObjectInputStream(s.getInputStream());
+	}
+	
+	public static Database getDbase() {
+		return d;
 	}
 	
 	public static FakeLobby getLobby(int key) {

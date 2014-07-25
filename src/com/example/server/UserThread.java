@@ -121,52 +121,6 @@ public class UserThread extends Thread {
 			TurnReturn returnData;
 			
 			while (!gameOver) {
-				/*o = input.readUnshared(); //non-fainted thread will block on this in case of monster fainting because it will get no input
-				if ((Turn)o != null) {
-					currentTurn = (Turn)o;
-					FakeServer.getLobby(lobbyNum).getProtocol().incTurns();
-
-					while (!FakeServer.getLobby(lobbyNum).getTurnProcessed()) {
-						synchronized (FakeServer.getLobby(lobbyNum).getLock()) {
-							try {
-								//TODO condition for if lobby returns mid-turn TurnReturn
-								if (FakeServer.getLobby(lobbyNum).getTurnReturn() != null &&
-									FakeServer.getLobby(lobbyNum).getTurnReturn().getTurnFinished() == 1) {
-									returnData = FakeServer.getLobby(lobbyNum).getTurnReturn();
-									if (playerNum == 0) {
-										player.setLead(returnData.getLeads()[0]);
-										oppLead = returnData.getLeads()[1];
-										output.writeUnshared(returnData);
-									} else if (playerNum == 1) {
-										player.setLead(returnData.getLeads()[1]);
-										oppLead = returnData.getLeads()[0];
-										output.writeUnshared(returnData);
-									}
-									o = input.readUnshared();
-									if ((Turn)o != null) {
-										currentTurn = (Turn)o;
-										FakeServer.getLobby(lobbyNum).getProtocol().incTurns();
-									}
-								}
-								FakeServer.getLobby(lobbyNum).getLock().wait();
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-						}
-					}
-					returnData = FakeServer.getLobby(lobbyNum).getTurnReturn();
-					currentTurn = null;
-					if (playerNum == 0) {
-						player.setLead(returnData.getLeads()[0]);
-						oppLead = returnData.getLeads()[1];
-						output.writeUnshared(returnData);
-					} else if (playerNum == 1) {
-						returnData.setLeads(new Monster[] { returnData.getLeads()[1], returnData.getLeads()[0] });
-						player.setLead(returnData.getLeads()[0]);
-						oppLead = returnData.getLeads()[1];
-						output.writeUnshared(returnData);
-					}
-				}*/
 				if ((Turn)(o = input.readUnshared()) != null)
 					currentTurn = (Turn)o;
 				FakeServer.getLobby(lobbyNum).getProtocol().incTurns();
@@ -191,17 +145,6 @@ public class UserThread extends Thread {
 				output.writeUnshared(returnData);
 				System.out.println(player.getLead().getHP() + " : " + oppLead.getHP());
 				output.reset();
-					//System.out.println("returning for player 1");
-				/*} else if (playerNum == 1) {
-					returnData.setLeads(new Monster[] { returnData.getLeads()[1], returnData.getLeads()[0] });
-					player.setLead(returnData.getLeads()[0]);
-					oppLead = returnData.getLeads()[1];
-					output.writeUnshared(returnData);
-					System.out.println("returning for player 2");
-					for (int i = 0; i < 2; i++) {
-						System.out.println(returnData.getLeads()[i].getHP());
-					}
-				}*/
 			}
 		} catch (IOException e) {
 			System.err.println("Player disconnected");
