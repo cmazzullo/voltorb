@@ -223,7 +223,7 @@ public class LocalGameRunner implements Runnable {
 						(returnData.getTurnFinished() == 1 && 
 						(returnData.getFainted() == (playerNum + 1) || 
 						returnData.getFainted() == 3))) {
-					do {
+					while (!turnReady) {
 						synchronized (lock) {
 							try {
 								System.out.println("i'm in the lock");
@@ -233,7 +233,7 @@ public class LocalGameRunner implements Runnable {
 							}
 						}
 						Thread.sleep(100);
-					} while (!turnReady);
+					}
 					
 					System.out.println("turn set to ready");
 					returnData = new TurnReturn();
@@ -255,6 +255,15 @@ public class LocalGameRunner implements Runnable {
 				}
 				System.out.println(returnData);
 				turnReady = false;
+				if (returnData.getTurnFinished() == 0 || 
+						returnData.getTurnFinished() == 2 ||
+						(returnData.getTurnFinished() == 1 && 
+						(returnData.getFainted() == (playerNum + 1) ||
+						returnData.getFainted() == 3))) {
+					synchronized (lock) {
+						lock.notify();
+					}
+				}
 			}
 			
 		} catch (IOException e1) {

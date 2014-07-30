@@ -77,11 +77,11 @@ public class UserThread extends Thread {
 	public void run() {
 		Object o;
 		try {
-			do {
+			while (!inLobby) {
 				synchronized (userLock) {
 					userLock.wait();
 				}
-			} while (!inLobby);
+			}
 			
 			System.out.println("num is " + playerNum + " lobby num is " + lobbyNum + " inLobby is " + inLobby);
 			output.writeUnshared(playerNum);
@@ -125,13 +125,13 @@ public class UserThread extends Thread {
 					currentTurn = (Turn)o;
 				FakeServer.getLobby(lobbyNum).getProtocol().incTurns();
 				System.out.println("Player " + (playerNum + 1) + " has made their move.");
-				do {
+				while (!FakeServer.getLobby(lobbyNum).getTurnProcessed()); {
 					synchronized (FakeServer.getLobby(lobbyNum).getLock()) {
 						try {
 						FakeServer.getLobby(lobbyNum).getLock().wait();
 						} catch (InterruptedException e) {	}
 					}
-				} while (!FakeServer.getLobby(lobbyNum).getTurnProcessed());
+				}
 				
 				returnData = FakeServer.getLobby(lobbyNum).getTurnReturn();
 				

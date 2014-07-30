@@ -88,13 +88,13 @@ public class FakeLobby extends Thread {
 				System.out.println("starting round");
 				turnsReady = false;
 				turnProcessed = false;
-				do {
+				while (!turnsReady) {
 					Thread.sleep(200); //TODO try another lock here, but see above todo
 					fsp.runBattle();
 					if (fsp.getTurnsReady() == 2) {
 						turnsReady = true;
 					}
-				} while (!turnsReady);
+				}
 			
 				returnData = fsp.runBattle();
 				fsp.resetTurns();
@@ -109,6 +109,7 @@ public class FakeLobby extends Thread {
 			// TODO super-secret exception for invalid move
 			e.printStackTrace();
 		} finally { // TODO figure out how to make sure this code only occurs when external interruption occurs, not from Thread.sleep()
+			System.out.println("interrupted");
 			for (UserThread ut : players) {
 				if (ut != null) {
 					ut.setLobbyNum(-1);

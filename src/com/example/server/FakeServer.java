@@ -71,6 +71,7 @@ public class FakeServer extends Thread implements Runnable {
 					System.out.println("put lobby in map");
 				} else {
 					newUser.setInLobby(true);
+					System.out.println(newUser.getInLobby());
 					newUser.setLobbyNum(nextLobby);
 					lobbyMap.get(nextLobby).addPlayer(newUser);
 					synchronized (lobbyMap.get(nextLobby).getUserThread()[1].getUserLock()) {
