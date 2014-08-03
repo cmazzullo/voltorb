@@ -18,10 +18,14 @@ public class LocalGameRunner implements Runnable {
 	
 	private boolean isReady = false;
 	private boolean battleStarted = false;
+	private boolean turnWaiting = true;
 	private boolean turnReady = false; //should be set to true once move selected and set back to false once turn is resolved
+	private boolean updateWaiting = true;
 	private boolean gameOver = false;
 	
 	public Object lock = new Object();
+	public Object waitingLock = new Object();
+	public Object readyLock = new Object();
 	
 	private Socket playerSocket;
 	public static ObjectInputStream input;
@@ -79,6 +83,14 @@ public class LocalGameRunner implements Runnable {
 		this.turnState = turnState;
 	}
 	
+	public boolean getTurnWaiting() {
+		return turnWaiting;
+	}
+	
+	public void setTurnWaiting(boolean turnWaiting) {
+		this.turnWaiting = turnWaiting;
+	}
+	
 	public boolean getIsReady() {
 		return isReady;
 	}
@@ -97,6 +109,22 @@ public class LocalGameRunner implements Runnable {
 	
 	public void setTurnReady(boolean ready) {
 		this.turnReady = ready;
+	}
+	
+	public TurnReturn getTurnReturn() {
+		return returnData;
+	}
+	
+	public boolean isUpdateWaiting() {
+		return updateWaiting;
+	}
+	
+	public void setUpdateWaiting(boolean isWaiting) {
+		this.updateWaiting = isWaiting;
+	}
+	
+	public boolean getGameOver() {
+		return gameOver;
 	}
 	
 	public void addToTeam(String monster, int fromIndex) throws Exception{
@@ -236,12 +264,20 @@ public class LocalGameRunner implements Runnable {
 					}
 					
 					System.out.println("turn set to ready");
+					turnWaiting = false;
+					synchronized (waitingLock) {
+						waitingLock.notify();
+					}
 					returnData = new TurnReturn();
 					Turn turn = new Turn(action, argument, turnState, false);
 					output.writeUnshared(turn);
 				} else {
+					turnReady = true;
+					turnWaiting = false;
+					synchronized (waitingLock) {
+						waitingLock.notify();
+					}
 					Turn turn = null;
-					returnData = new TurnReturn();
 					output.writeUnshared(turn);
 				}
 				System.out.println("wrote the turn");
@@ -255,13 +291,14 @@ public class LocalGameRunner implements Runnable {
 				}
 				System.out.println(returnData);
 				turnReady = false;
-				if (returnData.getTurnFinished() == 0 || 
-						returnData.getTurnFinished() == 2 ||
-						(returnData.getTurnFinished() == 1 && 
-						(returnData.getFainted() == (playerNum + 1) ||
-						returnData.getFainted() == 3))) {
-					synchronized (lock) {
-						lock.notify();
+				turnWaiting = true;
+				updateWaiting = true;
+				synchronized (readyLock) {
+					readyLock.notify();
+				}
+				while (updateWaiting) {
+					synchronized (waitingLock) {
+						waitingLock.wait();
 					}
 				}
 			}
